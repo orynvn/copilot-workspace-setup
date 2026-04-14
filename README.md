@@ -35,7 +35,8 @@ copilot-workspace-setup/
 │   │   ├── qa-tester.agent.md         # Test-runner sub-agent (user-invocable: false)
 │   │   ├── debugger.agent.md          # Bug fix + CI failure (user-invocable: true)
 │   │   ├── security-auditor.agent.md  # OWASP Top 10 audit (user-invocable: true)
-│   │   └── code-reviewer.agent.md     # Inline PR review (user-invocable: true)
+│   │   ├── code-reviewer.agent.md     # Inline PR review (user-invocable: true)
+│   │   └── quick.agent.md             # Solo executor for simple tasks, no pipeline (user-invocable: true)
 │   ├── instructions/                  # File-scoped rules per stack
 │   │   ├── laravel.instructions.md    # applyTo: **/*.php
 │   │   ├── nextjs.instructions.md     # applyTo: app/**/*.{ts,tsx}
@@ -193,8 +194,11 @@ After each phase, **handoff buttons** appear to advance to the next agent (or th
 | `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Shown in dropdown |
 | `security-auditor` | OWASP Top 10 audit, on-demand | Shown in dropdown |
 | `code-reviewer` | Inline PR review comments via GitHub MCP | Shown in dropdown |
+| `quick` | Solo executor for simple tasks — no plan, no tests, direct execution | Shown in dropdown |
 
 > Worker agents have `user-invocable: false` — hidden from the dropdown, only callable by the coordinator.
+>
+> Use `quick` when the task is a single-file edit, translation, config change, or cleanup that clearly does not need the full pipeline.
 
 ---
 
