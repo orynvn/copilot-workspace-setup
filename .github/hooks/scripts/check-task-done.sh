@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # check-task-done.sh
 # VS Code Agent Hook — UserPromptSubmit event
-# Kiểm tra xem .context/ có sẵn sàng không trước khi agent bắt đầu
+# Checks whether .context/ is ready before the agent starts
 
 set -euo pipefail
 
-# Đọc stdin (VS Code hook input JSON)
+# Read stdin (VS Code hook input JSON)
 INPUT=$(cat)
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
@@ -13,14 +13,14 @@ CONTEXT_DIR="$ROOT/.context"
 
 WARNINGS=""
 
-# Check .context tồn tại
+# Check .context exists
 if [[ ! -d "$CONTEXT_DIR" ]]; then
-  WARNINGS="WARNING: .context/ chưa được khởi tạo. Chạy inject-session-ctx.sh trước."
+  WARNINGS="WARNING: .context/ has not been initialized. Run inject-session-ctx.sh first."
 fi
 
 # Check HISTORY.md
 if [[ -d "$CONTEXT_DIR" && ! -f "$CONTEXT_DIR/HISTORY.md" ]]; then
-  WARNINGS="$WARNINGS\nWARNING: .context/HISTORY.md không tồn tại."
+  WARNINGS="$WARNINGS\nWARNING: .context/HISTORY.md does not exist."
 fi
 
 # Output

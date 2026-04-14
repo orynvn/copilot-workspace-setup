@@ -1,14 +1,14 @@
 # SKILL: E2E Tester (Playwright)
 
-## Mục đích
+## Purpose
 
-Skill này hướng dẫn viết, chạy và debug E2E tests với Playwright theo standard của dự án.
+This skill guides writing, running, and debugging E2E tests with Playwright according to project standards.
 
-## Khi nào dùng
+## When to use
 
-- Khi chạy prompt `run-e2e-test`.
-- Khi QA-Tester agent thực thi E2E suite.
-- Khi cần verify critical user journeys end-to-end.
+- When running the `run-e2e-test` prompt.
+- When the QA-Tester agent executes the E2E suite.
+- When critical user journeys need to be verified end-to-end.
 
 ## Test Organization
 
@@ -53,32 +53,32 @@ export default defineConfig({
 
 ## Workflow
 
-### Bước 1: Setup môi trường
+### Step 1: Set up environment
 
 ```bash
-# Install browsers (lần đầu)
+# Install browsers (first time)
 npx playwright install
 
-# Start test server nếu cần
+# Start test server if needed
 npm run dev &
 
-# Hoặc dùng webServer config trong playwright.config.ts
+# Or use webServer config in playwright.config.ts
 ```
 
-### Bước 2: Viết tests
+### Step 2: Write tests
 
 **Principles:**
-- Dùng role-based locators: `getByRole`, `getByLabel`, `getByText` — không dùng CSS selectors.
-- Mỗi test độc lập — không share state qua `beforeAll`.
-- Dùng `page.waitForURL()` / `expect(locator).toBeVisible()` thay vì `sleep`.
+- Use role-based locators: `getByRole`, `getByLabel`, `getByText` — not CSS selectors.
+- Each test is independent — do not share state via `beforeAll`.
+- Use `page.waitForURL()` / `expect(locator).toBeVisible()` instead of `sleep`.
 
-**Page Object Model (cho flows phức tạp):**
+**Page Object Model (for complex flows):**
 ```ts
 // tests/e2e/pages/LoginPage.ts
 export class LoginPage {
   readonly emailInput = this.page.getByLabel('Email')
-  readonly passwordInput = this.page.getByLabel('Mật khẩu')
-  readonly submitButton = this.page.getByRole('button', { name: 'Đăng nhập' })
+  readonly passwordInput = this.page.getByLabel('Password')
+  readonly submitButton = this.page.getByRole('button', { name: 'Login' })
 
   constructor(private page: Page) {}
 
@@ -103,15 +103,15 @@ export const test = base.extend({
   authenticatedPage: async ({ page }, use) => {
     await page.goto('/login')
     await page.getByLabel('Email').fill(process.env.TEST_USER_EMAIL!)
-    await page.getByLabel('Mật khẩu').fill(process.env.TEST_USER_PASSWORD!)
-    await page.getByRole('button', { name: 'Đăng nhập' }).click()
+    await page.getByLabel('Password').fill(process.env.TEST_USER_PASSWORD!)
+    await page.getByRole('button', { name: 'Login' }).click()
     await page.waitForURL('/dashboard')
     await use(page)
   },
 })
 ```
 
-### Bước 3: Chạy tests
+### Step 3: Run tests
 
 ```bash
 # All tests (headless)
@@ -136,20 +136,20 @@ npx playwright test --project=chromium
 CI=true npx playwright test
 ```
 
-### Bước 4: Debug failures
+### Step 4: Debug failures
 
 ```bash
-# Xem HTML report
+# View HTML report
 npx playwright show-report
 
-# Trace viewer (xem từng step)
+# Trace viewer (step-by-step)
 npx playwright show-trace test-results/.../trace.zip
 
 # Record new test
 npx playwright codegen http://localhost:3000
 ```
 
-### Bước 5: Report format
+### Step 5: Report format
 
 ```markdown
 ## E2E Test Report
@@ -173,28 +173,28 @@ npx playwright codegen http://localhost:3000
 **Error:**
 ```
 TimeoutError: locator.click: Timeout 30000ms exceeded
-Waiting for: getByRole('button', { name: 'Thanh toán' })
+Waiting for: getByRole('button', { name: 'Pay' })
 ```
 **Screenshot:** `test-results/checkout-chromium/screenshot.png`
-**Root cause:** Button render bị block bởi loading skeleton chưa dismiss.
-**Fix:** Thêm `await expect(page.getByTestId('loading-skeleton')).toBeHidden()` trước click.
+**Root cause:** Button render blocked by loading skeleton that has not dismissed.
+**Fix:** Add `await expect(page.getByTestId('loading-skeleton')).toBeHidden()` before click.
 
 ### Trace Links
-Mở trace với: `npx playwright show-report`
+Open trace with: `npx playwright show-report`
 ```
 
-## Critical User Journeys (phải có E2E coverage)
+## Critical User Journeys (must have E2E coverage)
 
 - [ ] Registration flow
 - [ ] Login / Logout
 - [ ] Password reset
-- [ ] Core business flow (vd: tạo order, thanh toán)
+- [ ] Core business flow (e.g. create order, payment)
 - [ ] Role-based access (admin vs user)
 
-## Locator Priority (từ ưu tiên cao đến thấp)
+## Locator Priority (highest to lowest)
 
 1. `getByRole()` — semantic, accessible
 2. `getByLabel()` — form inputs
 3. `getByText()` — visible text
-4. `getByTestId()` — custom `data-testid` attribute (dùng khi không có cách khác)
-5. CSS selectors — **tránh dùng** nếu có thể
+4. `getByTestId()` — custom `data-testid` attribute (use when no other option)
+5. CSS selectors — **avoid** if possible

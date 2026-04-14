@@ -6,29 +6,29 @@ tools:
   - readFile
   - runCommands
 description: >
-  Tạo migration file cho Laravel. Tự động detect tên bảng, columns, indexes,
-  foreign keys và sinh ra migration + model fillable nếu cần.
+  Create a migration file for Laravel. Auto-detects table name, columns, indexes,
+  foreign keys and generates the migration + model fillable if needed.
 ---
 
 # Create Migration Prompt (Laravel)
 
-Tạo migration mới cho Laravel theo đúng convention.
+Create a new Laravel migration following the correct conventions.
 
-## Thông tin migration
+## Migration information
 
-**Loại:** ${input:type:create | add_column | remove_column | add_index | add_foreign_key}
-**Tên bảng:** ${input:table:Tên bảng (snake_case, plural) — vd: user_profiles}
-**Mô tả:** ${input:description:Mô tả ngắn — vd: Thêm cột avatar_url vào users}
+**Type:** ${input:type:create | add_column | remove_column | add_index | add_foreign_key}
+**Table name:** ${input:table:Table name (snake_case, plural) — e.g. user_profiles}
+**Description:** ${input:description:Short description — e.g. Add avatar_url column to users}
 
 ---
 
-## Thực thi
+## Execution
 
-### 1. Xác nhận context
+### 1. Confirm context
 
-Đọc `.context/DECISIONS.md` để check xem có quy tắc đặc biệt cho DB không.
+Read `.context/DECISIONS.md` to check for any special DB rules.
 
-### 2. Tạo migration
+### 2. Create migration
 
 **Naming convention:**
 - Create table: `create_<table>_table`
@@ -37,20 +37,20 @@ Tạo migration mới cho Laravel theo đúng convention.
 - Add index: `add_index_to_<table>_<columns>`
 - Add foreign key: `add_<fk>_foreign_to_<table>_table`
 
-Chạy lệnh:
+Run command:
 ```bash
 php artisan make:migration <migration_name>
 ```
 
-### 3. Nội dung migration
+### 3. Migration content
 
-Tuân thủ `database.instructions.md`:
-- Luôn implement cả `up()` và `down()`.
-- Thêm index cho tất cả foreign key columns.
-- Định nghĩa `onDelete` behavior rõ ràng.
-- Không mix schema và data migration.
+Follow `database.instructions.md`:
+- Always implement both `up()` and `down()`.
+- Add indexes for all foreign key columns.
+- Define `onDelete` behavior explicitly.
+- Do not mix schema and data migration.
 
-Template cho CREATE TABLE:
+Template for CREATE TABLE:
 ```php
 public function up(): void
 {
@@ -67,21 +67,21 @@ public function down(): void
 }
 ```
 
-### 4. Cập nhật Model (nếu create table)
+### 4. Update Model (if create table)
 
-Nếu đây là migration tạo bảng mới, tạo hoặc cập nhật Model:
+If this is a migration for a new table, create or update the Model:
 ```bash
 php artisan make:model <ModelName>
 ```
-Thêm `$fillable` array vào Model.
+Add a `$fillable` array to the Model.
 
 ### 5. Log
 
-Append vào `.context/HISTORY.md`:
+Append to `.context/HISTORY.md`:
 ```
 [{{date}}] migration: ${input:description} — database/migrations/<filename>
 ```
 
 ---
 
-**Bắt đầu: Hiển thị migration sẽ tạo → chờ confirm → tạo file.**
+**Start: Display migration to be created → wait for confirmation → create file.**

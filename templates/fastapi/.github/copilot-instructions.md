@@ -1,14 +1,14 @@
 # FastAPI — Project-specific Copilot Instructions
 
-> **Override file cho dự án FastAPI.**
-> Copy file này vào `.github/copilot-instructions.md` của project FastAPI.
-> Các quy tắc trong file này kết hợp với global rules.
+> **Override file for FastAPI projects.**
+> Copy this file to `.github/copilot-instructions.md` in your FastAPI project.
+> Rules in this file combine with the global rules.
 
 ---
 
 ## Stack: FastAPI + Pydantic v2
 
-### Phiên bản tối thiểu
+### Minimum version
 - Python: 3.12+
 - FastAPI: 0.111+
 - Pydantic: 2.x

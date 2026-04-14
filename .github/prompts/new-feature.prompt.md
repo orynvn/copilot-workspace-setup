@@ -6,70 +6,70 @@ tools:
   - readFile
   - runCommands
 description: >
-  Tạo một feature mới hoàn chỉnh theo pipeline Plan → Implement → Test → Commit → Log.
-  Dùng khi cần implement một feature từ đầu, bao gồm cả test cases và commit chuẩn.
+  Create a complete new feature following the Plan → Implement → Test → Commit → Log pipeline.
+  Use when implementing a feature from scratch, including test cases and a standardized commit.
 ---
 
 # New Feature Prompt
 
-Tôi cần implement feature mới. Hãy chạy đúng pipeline:
+I need to implement a new feature. Run the full pipeline:
 
-## Thông tin feature
+## Feature information
 
-**Tên feature:** ${input:featureName:Tên feature (vd: User Authentication)}
-**Mô tả:** ${input:description:Mô tả ngắn chức năng cần implement}
-**Module:** ${input:module:Module liên quan (vd: AUTH, USER, PRODUCT)}
+**Feature name:** ${input:featureName:Feature name (e.g. User Authentication)}
+**Description:** ${input:description:Short description of the functionality to implement}
+**Module:** ${input:module:Related module (e.g. AUTH, USER, PRODUCT)}
 
 ---
 
-## Pipeline thực thi
+## Execution pipeline
 
-### Bước 1 — PLAN
+### Step 1 — PLAN
 
-1. Đọc `.context/HISTORY.md`, `.context/DECISIONS.md`, `.context/ERRORS.md`.
-2. Xác định tech stack từ project files.
-3. Load instructions tương ứng từ `.github/instructions/`.
-4. Tạo task breakdown đầy đủ:
-   - Danh sách files cần tạo/sửa (theo thứ tự dependency)
-   - Edge cases & rủi ro
+1. Read `.context/HISTORY.md`, `.context/DECISIONS.md`, `.context/ERRORS.md`.
+2. Identify the tech stack from project files.
+3. Load the matching instructions from `.github/instructions/`.
+4. Create a full task breakdown:
+   - List of files to create/modify (in dependency order)
+   - Edge cases & risks
    - Definition of Done
-5. Hiển thị plan → **chờ user confirm** trước khi tiếp tục.
+5. Display the plan → **wait for user confirmation** before continuing.
 
-### Bước 2 — IMPLEMENT
+### Step 2 — IMPLEMENT
 
-Sau khi user confirm:
-1. Implement từng task theo thứ tự.
-2. Tuân thủ conventions của stack (`laravel.instructions.md`, `nextjs.instructions.md`, ...).
-3. Không thêm scope ngoài plan.
-4. Security checklist trước khi mark done:
-   - [ ] Không hardcode secrets
+After user confirmation:
+1. Implement each task in order.
+2. Follow stack conventions (`laravel.instructions.md`, `nextjs.instructions.md`, ...).
+3. Do not add scope outside the plan.
+4. Security checklist before marking done:
+   - [ ] No hardcoded secrets
    - [ ] Input validated
    - [ ] Authorization checked
 
-### Bước 3 — TEST
+### Step 3 — TEST
 
-1. Viết test cases cho toàn bộ feature (dùng skill `test-case-writer`).
-2. Chạy tests.
-3. Report kết quả.
-4. Nếu fail → fix → chạy lại.
+1. Write test cases for the entire feature (use the `test-case-writer` skill).
+2. Run tests.
+3. Report results.
+4. If failing → fix → rerun.
 
-### Bước 4 — COMMIT
+### Step 4 — COMMIT
 
-Sau khi tất cả tests pass, thực hiện commit:
+After all tests pass, commit:
 
-1. Chạy `/commit-task` prompt để tạo commit chuẩn Conventional Commits.
-2. Verify không có file nhạy cảm trong staged changes.
-3. Commit với message: `feat(<scope>): <subject>`
-4. **Không push** — user quyết định.
+1. Run `/commit-task` prompt to create a Conventional Commits message.
+2. Verify no sensitive files are in staged changes.
+3. Commit with message: `feat(<scope>): <subject>`
+4. **Do not push** — user decides.
 
-### Bước 5 — LOG
+### Step 5 — LOG
 
-1. Append vào `.context/HISTORY.md`:
+1. Append to `.context/HISTORY.md`:
    ```
    [{{date}}] feat: ${input:featureName} — <files affected>
    ```
-2. Nếu có architectural decision → chạy `log-decision` prompt.
+2. If an architectural decision was made → run the `log-decision` prompt.
 
 ---
 
-Bắt đầu với **Bước 1 — PLAN**.
+Start with **Step 1 — PLAN**.

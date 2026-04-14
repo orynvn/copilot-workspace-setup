@@ -1,9 +1,12 @@
 # copilot-workspace-setup
 
-> **Template repo — setup một lần, dùng cho mọi dự án.**
-> Clone hoặc copy `.github/`, `.context/`, `.vscode/` vào project mới là xong.
+> **Template repo — set up once, use across every project.**
+> Clone or copy `.github/`, `.context/`, `.vscode/` into any new project and you're ready to go.
 
-Hỗ trợ: **Laravel**, **Next.js**, **React (Vite)**, **Vue 3**, **NestJS**, **Django**, **FastAPI**
+> **Language:** This is the English documentation (default from v2.0).
+> For the Vietnamese version, see [README.vi.md](README.vi.md) or browse the [v1.0 tag](https://github.com/orynvn/copilot-workspace-setup/tree/v1.0).
+
+Supports: **Laravel**, **Next.js**, **React (Vite)**, **Vue 3**, **NestJS**, **Django**, **FastAPI**
 
 | Stack | Test Framework | E2E | Min Version |
 |---|---|---|---|
@@ -17,7 +20,7 @@ Hỗ trợ: **Laravel**, **Next.js**, **React (Vite)**, **Vue 3**, **NestJS**, *
 
 ---
 
-## Cấu trúc
+## Structure
 
 ```
 copilot-workspace-setup/
@@ -25,15 +28,15 @@ copilot-workspace-setup/
 ├── .github/
 │   ├── copilot-instructions.md        # Global rules (tech-agnostic)
 │   ├── agents/                        # Custom agents (VS Code v1.100+)
-│   │   ├── oryn-dev.agent.md          # Coordinator — điều phối subagents tự động
-│   │   ├── planner.agent.md           # Sub-agent phân tích (user-invocable: false)
-│   │   ├── implementer.agent.md       # Sub-agent viết code (user-invocable: false)
-│   │   ├── tc-writer.agent.md         # Sub-agent viết test cases (user-invocable: false)
-│   │   ├── qa-tester.agent.md         # Sub-agent chạy tests (user-invocable: false)
+│   │   ├── oryn-dev.agent.md          # Coordinator — orchestrates subagents automatically
+│   │   ├── planner.agent.md           # Analysis sub-agent (user-invocable: false)
+│   │   ├── implementer.agent.md       # Code-writing sub-agent (user-invocable: false)
+│   │   ├── tc-writer.agent.md         # Test case sub-agent (user-invocable: false)
+│   │   ├── qa-tester.agent.md         # Test-runner sub-agent (user-invocable: false)
 │   │   ├── debugger.agent.md          # Bug fix + CI failure (user-invocable: true)
 │   │   ├── security-auditor.agent.md  # OWASP Top 10 audit (user-invocable: true)
-│   │   └── code-reviewer.agent.md     # PR review inline (user-invocable: true)
-│   ├── instructions/                  # File-scoped rules theo stack
+│   │   └── code-reviewer.agent.md     # Inline PR review (user-invocable: true)
+│   ├── instructions/                  # File-scoped rules per stack
 │   │   ├── laravel.instructions.md    # applyTo: **/*.php
 │   │   ├── nextjs.instructions.md     # applyTo: app/**/*.{ts,tsx}
 │   │   ├── react.instructions.md      # applyTo: src/**/*.{ts,tsx}
@@ -43,7 +46,7 @@ copilot-workspace-setup/
 │   │   ├── fastapi.instructions.md    # applyTo: **/routers/**/*.py,...
 │   │   ├── database.instructions.md   # applyTo: **/migrations/**
 │   │   └── testing.instructions.md    # applyTo: tests/**,**/*.test.*
-│   ├── prompts/                       # Reusable prompt files (/slash-command)
+│   ├── prompts/                       # Reusable prompt files (/slash-commands)
 │   │   ├── new-feature.prompt.md
 │   │   ├── create-migration.prompt.md
 │   │   ├── create-module.prompt.md
@@ -62,18 +65,18 @@ copilot-workspace-setup/
 │   └── hooks/                         # VS Code Agent hooks (auto-loaded)
 │       ├── qa-workflow.json           # Hook config — SessionStart/PostToolUse/Stop
 │       └── scripts/
-│           ├── inject-session-ctx.sh  # SessionStart: inject .context/ vào conversation
-│           ├── check-task-done.sh     # UserPromptSubmit: kiểm tra context sẵn sàng
-│           ├── post-edit-audit.sh     # PostToolUse: ghi log file edits
-│           └── session-stop.sh        # Stop: nhắc update HISTORY.md
+│           ├── inject-session-ctx.sh  # SessionStart: inject .context/ into conversation
+│           ├── check-task-done.sh     # UserPromptSubmit: verify context is ready
+│           ├── post-edit-audit.sh     # PostToolUse: log file edits to session log
+│           └── session-stop.sh        # Stop: block session if HISTORY.md not updated
 │
 ├── .context/
-│   ├── HISTORY.md                     # Log lịch sử thay đổi
-│   ├── DECISIONS.md                   # Index architectural decisions
-│   ├── ERRORS.md                      # Index errors đã gặp
-│   ├── log.sh                         # Quick log script
-│   ├── decisions/                     # Chi tiết từng ADR
-│   ├── errors/                        # Chi tiết từng error
+│   ├── HISTORY.md                     # Chronological change log
+│   ├── DECISIONS.md                   # Architectural decisions index (ADR)
+│   ├── ERRORS.md                      # Known bugs index (avoid repeating)
+│   ├── log.sh                         # Quick log helper script
+│   ├── decisions/                     # Individual ADR files
+│   ├── errors/                        # Individual error detail files
 │   ├── sessions/                      # Per-session logs (auto-created by hooks)
 │   └── test-cases/
 │       └── TC-TEMPLATE.md
@@ -81,9 +84,9 @@ copilot-workspace-setup/
 ├── .vscode/
 │   ├── mcp.json                       # MCP servers (context7, github, playwright, error-learning)
 │   ├── settings.json                  # VS Code settings (agents, hooks, subagents)
-│   └── extensions.json               # Recommended extensions
+│   └── extensions.json                # Recommended extensions
 │
-└── templates/                         # Project-specific overrides
+└── templates/                         # Stack-specific overrides
     ├── laravel/
     │   └── .github/copilot-instructions.md
     ├── nextjs/
@@ -98,15 +101,15 @@ copilot-workspace-setup/
 
 ---
 
-## Cách dùng cho dự án mới
+## Getting Started on a New Project
 
-### Option A — Copy thủ công
+### Option A — Manual Copy
 
 ```bash
-# Clone template repo
+# Clone the template repo
 git clone https://github.com/orynvn/copilot-workspace-setup.git temp-setup
 
-# Copy vào project mới
+# Copy into your project
 cp -r temp-setup/.github/ /path/to/your-project/
 cp -r temp-setup/.context/ /path/to/your-project/
 cp -r temp-setup/.vscode/ /path/to/your-project/
@@ -114,15 +117,15 @@ cp -r temp-setup/.vscode/ /path/to/your-project/
 # Reset history
 echo "# Project History" > /path/to/your-project/.context/HISTORY.md
 
-# Xoá temp
+# Remove temp clone
 rm -rf temp-setup
 ```
 
-### Option B — Use as template (GitHub)
+### Option B — GitHub Template
 
-1. Nhấn **"Use this template"** trên GitHub.
-2. Clone repo mới về.
-3. Copy template phù hợp với stack của bạn:
+1. Click **"Use this template"** on GitHub.
+2. Clone your new repo.
+3. Copy the template matching your stack:
 
 | Stack | Template path |
 |---|---|
@@ -133,108 +136,112 @@ rm -rf temp-setup
 | FastAPI | `templates/fastapi/.github/copilot-instructions.md` |
 
 ```bash
-# Ví dụ cho NestJS
+# Example for NestJS
 cp templates/nestjs/.github/copilot-instructions.md .github/copilot-instructions.md
 ```
 
-### Cài đặt Error Learning MCP (tùy chọn)
+### Install Error Learning MCP (optional)
 
 ```bash
-# Clone MCP server vào project (cùng cấp .github/)
+# Clone the MCP server into your project (alongside .github/)
 cd /path/to/your-project
 git clone https://github.com/orynvn/mcp-error-learning.git
 
 # Install
 python3 -m pip install -e mcp-error-learning/
 
-# VS Code tự độc config từ .vscode/mcp.json — không cần config thêm
+# VS Code auto-detects the config from .vscode/mcp.json — no extra setup needed
 ```
 
-> MCP server sẽ lưu knowledge base tại `mcp-error-learning/data/errors.db`.
-> Thư mục `mcp-error-learning/` có repo riêng, đã được thêm vào `.gitignore` của project.
+> The MCP server stores its knowledge base at `mcp-error-learning/data/errors.db`.
+> The `mcp-error-learning/` directory has its own repo and is already added to the project's `.gitignore`.
 
 ---
 
-## Workflow — Tự động qua Native Subagents
+## Workflow — Automatic via Native Subagents
 
-Kể từ VS Code 1.100+, pipeline **hoàn toàn tự động** — không cần switch chatmode thủ công:
+From VS Code 1.100+, the pipeline is **fully automatic** — no manual chatmode switching needed:
 
 ```
-1. Chọn agent "Oryn Dev" trong Chat view
-2. Đặt permission level: "Bypass Approvals" (optional, cho tốc độ)
-3. Mô tả task (hoặc dùng /new-feature, /create-module...)
+1. Select "Oryn Dev" agent in the Chat view
+2. Set permission level to "Bypass Approvals" (optional, for speed)
+3. Describe your task (or use /new-feature, /create-module...)
 
-   Oryn Dev (Coordinator) tự động:
-   ├── → Planner subagent    phân tích + task breakdown
-   ├── → User confirm
-   ├── → Implementer subagent  implement từng file
-   ├── → TC-Writer subagent   viết test cases
-   ├── → QA-Tester subagent   chạy tests + báo cáo
-   ├── → Commit (git add + commit — không push)
-   └── → Cập nhật .context/HISTORY.md
+   Oryn Dev (Coordinator) automatically:
+   ├── → Planner subagent      analyze + task breakdown
+   ├── → User confirms plan
+   ├── → Implementer subagent  implement files one by one
+   ├── → TC-Writer subagent    write test cases
+   ├── → QA-Tester subagent    run tests + report
+   ├── → Commit (git add + commit — no push)
+   └── → Update .context/HISTORY.md
 ```
 
-Sau mỗi phase, **handoff buttons** xuất hiện để chuyển tiếp sang agent tiếp theo (hoặc agent tự gọi subagent).
+After each phase, **handoff buttons** appear to advance to the next agent (or the coordinator calls subagents directly).
 
 ---
 
 ## Agents
 
-| Agent | Vai trò | Visibility |
-|-------|---------|-----------|
-| `oryn-dev` | Coordinator — điều phối pipeline | Hiện trong dropdown |
-| `planner` | Phân tích, task breakdown | Subagent only |
-| `implementer` | Viết code theo stack conventions | Subagent only |
-| `tc-writer` | Viết test cases TC-MODULE-NNN | Subagent only |
-| `qa-tester` | Chạy tests, root cause analysis | Subagent only || `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Hiện trong dropdown |
-| `security-auditor` | OWASP Top 10 audit, on-demand | Hiện trong dropdown |
-| `code-reviewer` | PR review inline comments qua GitHub MCP | Hiện trong dropdown |
-> Worker agents có `user-invocable: false` — ẩn khỏi dropdown, chỉ được gọi bởi coordinator.
+| Agent | Role | Visibility |
+|---|---|---|
+| `oryn-dev` | Coordinator — orchestrates the full pipeline | Shown in dropdown |
+| `planner` | Analysis, task breakdown | Subagent only |
+| `implementer` | Write code per stack conventions | Subagent only |
+| `tc-writer` | Write test cases TC-MODULE-NNN | Subagent only |
+| `qa-tester` | Run tests, root cause analysis | Subagent only |
+| `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Shown in dropdown |
+| `security-auditor` | OWASP Top 10 audit, on-demand | Shown in dropdown |
+| `code-reviewer` | Inline PR review comments via GitHub MCP | Shown in dropdown |
+
+> Worker agents have `user-invocable: false` — hidden from the dropdown, only callable by the coordinator.
 
 ---
 
 ## Prompts (Slash Commands)
 
-Gõ `/` trong Chat view để chọn:
+Type `/` in the Chat view to pick:
 
-| Prompt | Dùng khi |
-|--------|----------|
-| `/new-feature` | Implement feature mới từ đầu |
-| `/create-module` | Tạo module CRUD hoàn chỉnh |
-| `/create-migration` | Tạo DB migration (Laravel) |
-| `/write-test-cases` | Viết tests cho code hiện có |
-| `/run-api-test` | Chạy unit/integration tests |
-| `/run-e2e-test` | Chạy Playwright E2E tests |
-| `/profile-performance` | Phân tích bottleneck: N+1, bundle size, latency, memory || `/commit-task` | Tạo git commit chuẩn Conventional Commits sau mỗi task || `/log-decision` | Ghi architectural decision (ADR) |
-| `/update-context` | Sync `.context/` cuối session |
+| Prompt | When to use |
+|---|---|
+| `/new-feature` | Implement a new feature end-to-end |
+| `/create-module` | Generate a complete CRUD module |
+| `/create-migration` | Create a DB migration (Laravel) |
+| `/write-test-cases` | Write tests for existing code |
+| `/run-api-test` | Run unit / integration tests |
+| `/run-e2e-test` | Run Playwright E2E tests |
+| `/profile-performance` | Analyze bottlenecks: N+1, bundle size, latency, memory |
+| `/commit-task` | Generate a Conventional Commits message and commit |
+| `/log-decision` | Record an architectural decision (ADR) |
+| `/update-context` | Sync `.context/` at end of session |
 
 ---
 
-## Hooks (Auto-loaded từ `.github/hooks/`)
+## Hooks (Auto-loaded from `.github/hooks/`)
 
-VS Code tự động load và chạy hooks tại các lifecycle events:
+VS Code automatically loads and fires hooks at lifecycle events:
 
-| Event | Script | Tác dụng |
-|-------|--------|----------|
-| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY/ERRORS/DECISIONS vào context |
-| `UserPromptSubmit` | `check-task-done.sh` | Cảnh báo nếu `.context/` chưa sẵn sàng |
-| `PostToolUse` | `post-edit-audit.sh` | Ghi log file edits vào session log |
-| `Stop` | `session-stop.sh` | Chặn session nếu HISTORY.md chưa được update |
+| Event | Script | Effect |
+|---|---|---|
+| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY / ERRORS / DECISIONS into context |
+| `UserPromptSubmit` | `check-task-done.sh` | Warn if `.context/` is not ready |
+| `PostToolUse` | `post-edit-audit.sh` | Log file edits to the session log |
+| `Stop` | `session-stop.sh` | Block session exit if HISTORY.md was not updated |
 
 ---
 
 ## Context Memory
 
-`.context/` là "memory" của dự án — tự động được inject vào mỗi session qua hooks:
+`.context/` acts as the project's long-term memory — auto-injected into every session via hooks:
 
-- **HISTORY.md** — log mọi thay đổi theo thời gian
+- **HISTORY.md** — chronological change log
 - **DECISIONS.md** — architectural decisions (ADR index)
-- **ERRORS.md** — bugs đã gặp để tránh lặp lại
-- **sessions/** — per-session logs (tự tạo bởi hook)
-- **test-cases/** — TC specs theo module
+- **ERRORS.md** — known bugs to avoid repeating
+- **sessions/** — per-session logs (auto-created by hook)
+- **test-cases/** — TC specs per module
 
 ```bash
-# Log nhanh một thay đổi
+# Quick log a change
 ./.context/log.sh "feat: User auth module — AuthController.php"
 ```
 
@@ -242,38 +249,38 @@ VS Code tự động load và chạy hooks tại các lifecycle events:
 
 ## MCP Servers (`.vscode/mcp.json`)
 
-| Server | Dùng cho |
-|--------|---------|
-| `context7` | Fetch docs thư viện (React, Next.js, Laravel...) |
+| Server | Purpose |
+|---|---|
+| `context7` | Fetch library docs (React, Next.js, Laravel…) |
 | `github` | Issues, PRs, Actions workflow logs, CI check runs |
-| `playwright` | Browser automation cho E2E tests |
-| `error-learning` | **Error Learning MCP** — knowledge base lỗi local (xem bên dưới) |
+| `playwright` | Browser automation for E2E tests |
+| `error-learning` | **Error Learning MCP** — local error knowledge base |
 
 ---
 
 ## Error Learning MCP
 
-> **Concept:** Biến Debugger agent từ "thông minh nhưng hay quên" thành "thông minh và học được" — tích lũy kiến thức từ lịch sử lỗi theo thời gian.
+> **Concept:** Turns the Debugger agent from "smart but forgetful" into "smart and learning" — accumulating knowledge from error history over time.
 
-MCP server này được phát triển độc lập tại **[orynvn/mcp-error-learning](https://github.com/orynvn/mcp-error-learning)**. Sau khi cài đặt, VS Code tự detect qua `.vscode/mcp.json` trong repo này.
+Developed as an independent server at **[orynvn/mcp-error-learning](https://github.com/orynvn/mcp-error-learning)**. Once installed, VS Code auto-detects it via `.vscode/mcp.json` in this repo.
 
-Xem hướng dẫn cài đặt, tool API, và roadmap tại repo trên.
+See installation instructions, tool API, and roadmap in that repo.
 
 ---
 
 ## Design Decisions
 
-- **Native subagents**: Coordinator tự gọi worker agents — không cần switch thủ công.
-- **Handoffs**: Button chuyển tiếp giữa agents sau mỗi phase.
-- **Hooks auto-loaded**: `.github/hooks/*.json` tự động active, không cần config thêm.
-- **2-tier instructions**: Global (tech-agnostic) + Stack-specific (`applyTo` frontmatter).
-- **Context memory**: Persist "AI memory" xuyên suốt dự án qua `.context/`.
-- **Structured test IDs**: `TC-MODULE-NNN` trace từ spec → code → report.
+- **Native subagents**: Coordinator calls worker agents directly — no manual switching.
+- **Handoffs**: Transition buttons between agents after each phase.
+- **Hooks auto-loaded**: `.github/hooks/*.json` activates automatically, no extra config.
+- **2-tier instructions**: Global (tech-agnostic) + stack-specific (`applyTo` frontmatter).
+- **Context memory**: Persist AI memory across the entire project lifetime via `.context/`.
+- **Structured test IDs**: `TC-MODULE-NNN` traceable from spec → code → report.
 
 ---
 
-## Yêu cầu
+## Requirements
 
 - **VS Code** v1.100+ (April 2025)
 - **GitHub Copilot** extension (latest)
-- Extension setting `chat.agent.enabled: true` (đã có trong `.vscode/settings.json`)
+- Extension setting `chat.agent.enabled: true` (already included in `.vscode/settings.json`)

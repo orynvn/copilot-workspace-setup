@@ -1,24 +1,24 @@
 # SKILL: API Tester
 
-## Mục đích
+## Purpose
 
-Skill này hướng dẫn cách chạy, phân tích và báo cáo kết quả API/integration tests một cách nhất quán.
+This skill guides how to run, analyze, and report API/integration test results consistently.
 
-## Khi nào dùng
+## When to use
 
-- Khi chạy prompt `run-api-test`.
-- Khi QA-Tester agent thực thi test suite.
-- Sau mỗi implementation để verify correctness.
+- When running the `run-api-test` prompt.
+- When the QA-Tester agent executes the test suite.
+- After each implementation to verify correctness.
 
 ## Workflow
 
-### Bước 1: Pre-flight check
+### Step 1: Pre-flight check
 
-Trước khi chạy tests, verify:
-1. Test database tồn tại và accessible.
-2. Env vars cho test mode được set (`APP_ENV=testing`, `DATABASE_URL_TEST`, ...).
-3. Migrations đã chạy trên test DB.
-4. Không chạy tests trên production database.
+Before running tests, verify:
+1. Test database exists and is accessible.
+2. Env vars for test mode are set (`APP_ENV=testing`, `DATABASE_URL_TEST`, ...).
+3. Migrations have run on the test DB.
+4. Not running tests against the production database.
 
 ```bash
 # Laravel
@@ -28,7 +28,7 @@ php artisan migrate --env=testing
 NODE_ENV=test npx prisma migrate deploy
 ```
 
-### Bước 2: Chạy tests theo stack
+### Step 2: Run tests by stack
 
 **Laravel (Pest/PHPUnit):**
 ```bash
@@ -60,18 +60,18 @@ npm run test -- --verbose --forceExit 2>&1 | tee test-output.log
 npm run test:cov
 ```
 
-### Bước 3: Parse output
+### Step 3: Parse output
 
-Extract từ output:
+Extract from output:
 - Total: pass / fail / skip count
 - Duration
-- Coverage % (nếu có)
+- Coverage % (if available)
 - Failing test names + error messages
-- Stack traces cho failures
+- Stack traces for failures
 
-### Bước 4: Root cause analysis (khi có failures)
+### Step 4: Root cause analysis (when failures occur)
 
-Với mỗi failing test, phân tích theo checklist:
+For each failing test, analyze using the checklist:
 
 ```
 □ Type mismatch? (expected string, got undefined)
@@ -82,7 +82,7 @@ Với mỗi failing test, phân tích theo checklist:
 □ Env issue? (missing env var, wrong config)
 ```
 
-### Bước 5: Report format
+### Step 5: Report format
 
 ```markdown
 ## API Test Report
@@ -110,8 +110,8 @@ Với mỗi failing test, phân tích theo checklist:
 ```
 <actual error message>
 ```
-**Root cause:** <phân tích>
-**Recommended fix:** <hướng sửa cụ thể>
+**Root cause:** <analysis>
+**Recommended fix:** <specific direction>
 **Priority:** P0 (blocker) | P1 (high) | P2 (low)
 
 ### Coverage Report
@@ -135,11 +135,11 @@ Với mỗi failing test, phân tích theo checklist:
 | Utilities/helpers | 85% |
 | Overall project | 75% |
 
-Nếu coverage dưới threshold → báo cáo và yêu cầu thêm tests trước khi merge.
+If coverage is below threshold → report and require more tests before merging.
 
 ## Security Test Patterns
 
-Luôn verify các security cases trong API tests:
+Always verify security cases in API tests:
 
 ```php
 // Laravel — check auth required
@@ -158,8 +158,8 @@ it('forbids access to other users data', function () {
 
 ## Flaky Test Detection
 
-Nếu một test intermittently fails:
-1. Chạy 3 lần để confirm flakiness: `--retry=3`
-2. Tag test với `@flaky` comment.
-3. Tạo issue để fix trong sprint tiếp theo.
-4. Không block merge vì flaky test — nhưng track nó.
+If a test intermittently fails:
+1. Run 3 times to confirm flakiness: `--retry=3`
+2. Tag test with `@flaky` comment.
+3. Create an issue to fix in the next sprint.
+4. Do not block merge because of a flaky test — but track it.

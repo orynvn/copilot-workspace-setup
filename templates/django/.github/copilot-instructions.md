@@ -1,14 +1,14 @@
 # Django — Project-specific Copilot Instructions
 
-> **Override file cho dự án Django + DRF.**
-> Copy file này vào `.github/copilot-instructions.md` của project Django.
-> Các quy tắc trong file này kết hợp với global rules.
+> **Override file for Django + DRF projects.**
+> Copy this file to `.github/copilot-instructions.md` in your Django project.
+> Rules in this file combine with the global rules.
 
 ---
 
 ## Stack: Django + Django REST Framework
 
-### Phiên bản tối thiểu
+### Minimum version
 - Python: 3.12+
 - Django: 5.x
 - Django REST Framework: 3.15+

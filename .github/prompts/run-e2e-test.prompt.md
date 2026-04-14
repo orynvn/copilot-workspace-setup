@@ -5,42 +5,42 @@ tools:
   - runCommands
   - readFile
 description: >
-  Chạy E2E tests với Playwright. Hỗ trợ headed/headless mode, specific test files,
-  và tự động báo cáo kết quả theo format chuẩn.
+  Run E2E tests with Playwright. Supports headed/headless mode, specific test files,
+  and automatically reports results in standard format.
 ---
 
 # Run E2E Test Prompt
 
-Chạy E2E tests với Playwright.
+Run E2E tests with Playwright.
 
-## Thông tin
+## Information
 
-**Test file/suite:** ${input:testFile:Tên file hoặc suite (để trống = chạy tất cả)}
+**Test file/suite:** ${input:testFile:File or suite name (leave blank to run all)}
 **Mode:** ${input:mode:headless | headed | debug}
 **Browser:** ${input:browser:chromium | firefox | webkit | all}
 
 ---
 
-## Thực thi
+## Execution
 
-### 1. Kiểm tra Playwright config
+### 1. Check Playwright config
 
-Đọc `playwright.config.ts` để hiểu:
+Read `playwright.config.ts` to understand:
 - Base URL
 - Test directory
 - Browser targets
 - Timeout settings
 
-### 2. Chạy tests
+### 2. Run tests
 
 ```bash
-# Tất cả tests (headless)
+# All tests (headless)
 npx playwright test
 
 # Specific file
 npx playwright test ${input:testFile}
 
-# Headed mode (thấy browser)
+# Headed mode (see browser)
 npx playwright test --headed
 
 # Debug mode (breakpoints)
@@ -49,20 +49,20 @@ npx playwright test --debug
 # Specific browser
 npx playwright test --project=${input:browser}
 
-# Với report
+# With report
 npx playwright test --reporter=html
 ```
 
-### 3. Phân tích kết quả
+### 3. Analyze results
 
 Parse Playwright output:
 - Pass / fail / flaky counts
-- Screenshots và videos của failing tests (nếu có)
-- Test duration và timeout warnings
+- Screenshots and videos of failing tests (if any)
+- Test duration and timeout warnings
 
 ### 4. Report
 
-**Tất cả PASS:**
+**All PASS:**
 ```markdown
 ## ✅ E2E Test Report
 
@@ -80,7 +80,7 @@ Parse Playwright output:
 **Playwright Report:** `npx playwright show-report`
 ```
 
-**Có FAIL:**
+**With FAIL:**
 ```markdown
 ## ❌ E2E Test Report
 
@@ -98,8 +98,8 @@ TimeoutError: Locator.click: Timeout 30000ms exceeded
   Call log: waiting for getByRole('button', { name: 'Login' })
 \`\`\`
 **Screenshot:** `test-results/auth-login-chromium/screenshot.png`
-**Root cause:** Login button không có trong DOM — API response chậm.
-**Gợi ý fix:** Tăng timeout selector hoặc thêm `waitForResponse` trước click.
+**Root cause:** Login button not in DOM — slow API response.
+**Suggested fix:** Increase selector timeout or add `waitForResponse` before click.
 
 ---
 **Action required:** Fix Y failing tests + check flaky tests.
@@ -107,13 +107,13 @@ TimeoutError: Locator.click: Timeout 30000ms exceeded
 
 ### 5. Flaky test handling
 
-Nếu phát hiện flaky tests (pass một lần, fail lần khác):
+If flaky tests are detected (pass once, fail next):
 ```bash
-# Re-run lần 2 để confirm flakiness
+# Re-run to confirm flakiness
 npx playwright test --repeat-each=3
 ```
-Nếu vẫn flaky → report và quarantine test đó (tag `@flaky`).
+If still flaky → report and quarantine the test (tag `@flaky`).
 
 ---
 
-**Bắt đầu: Check config → chạy → report → show-report nếu có failures.**
+**Start: Check config → run → report → show-report if there are failures.**

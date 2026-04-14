@@ -1,62 +1,62 @@
 # Known Errors & Anti-patterns
 
-> Log tất cả bugs, errors, và anti-patterns đã gặp trong dự án.
-> Copilot đọc file này trước khi implement để tránh lặp lại lỗi cũ.
+> Log all bugs, errors, and anti-patterns encountered in the project.
+> Copilot reads this file before implementing to avoid repeating old mistakes.
 >
-> **MCP Integration:** Từ Phase 1 trở đi, file này được sync với `mcp-error-learning` SQLite DB.
-> Dùng Debugger agent để tự động record — không cần edit thủ công.
+> **MCP Integration:** From Phase 1 onwards, this file is synced with the `mcp-error-learning` SQLite DB.
+> Use the Debugger agent to auto-record — no need to edit manually.
 
 ---
 
 ## Open
 
-*(Chưa có open errors — thêm khi phát hiện)*
+*(No open errors yet — add when discovered)*
 
 ---
 
 ## Resolved
 
-*(Chưa có resolved errors)*
+*(No resolved errors yet)*
 
 ---
 
-## Format chuẩn — BUG-NNN (manual hoặc auto qua Debugger)
+## Standard format — BUG-NNN (manual or auto via Debugger)
 
 ```markdown
-### BUG-NNN: <Tiêu đề ngắn, rõ ràng>
+### BUG-NNN: <Short, clear title>
 **Date:** YYYY-MM-DD
 **Stack:** Laravel | Next.js | React | NestJS | Django | FastAPI
 **Module:** AUTH | USER | PRODUCT | ORDER | ...
-**Symptom:** <Triệu chứng user/dev quan sát được>
-**Root cause:** <Nguyên nhân gốc rễ — không phải symptom>
-**Fix:** `path/to/file.ts:line` — <mô tả thay đổi>
-**Prevention:** <Pattern hoặc quy tắc để tránh tái diễn>
+**Symptom:** <Symptom observed by user/dev>
+**Root cause:** <Root cause — not the symptom>
+**Fix:** `path/to/file.ts:line` — <description of change>
+**Prevention:** <Pattern or rule to avoid recurrence>
 **Test added:** TC-MODULE-NNN
-**MCP ID:** <error_id từ mcp-error-learning nếu đã record>
+**MCP ID:** <error_id from mcp-error-learning if recorded>
 ```
 
 ---
 
 ## Anti-patterns (project-level)
 
-> Những pattern bị cấm trong dự án này và lý do:
+> Patterns that are prohibited in this project and why:
 
-*(Thêm khi phát hiện pattern xấu lặp lại)*
+*(Add when a bad pattern is repeatedly observed)*
 
 
-## Cách sử dụng
+## How to use
 
-- Khi phát hiện bug mới → thêm vào **Open** section.
-- Khi bug đã fix → move xuống **Resolved** section + thêm `**Fixed:** YYYY-MM-DD`.
-- Copilot tự động append khi chạy `update-context` prompt.
+- When a new bug is found → add to the **Open** section.
+- When a bug is fixed → move to the **Resolved** section + add `**Fixed:** YYYY-MM-DD`.
+- Copilot automatically appends when running the `update-context` prompt.
 
-## Anti-patterns thường gặp
+## Common anti-patterns to avoid
 
-> Những lỗi phổ biến cần tránh (tech-agnostic):
+> Common mistakes to avoid (tech-agnostic):
 
-- **N+1 Query**: Luôn eager load relationships khi query.
-- **Hardcoded credentials**: Dùng env vars, không bao giờ hardcode.
-- **Missing input validation**: Validate tại system boundary, trước khi xử lý.
-- **Raw SQL interpolation**: Dùng parameterized queries / ORM.
-- **Swallowed errors**: Không bao giờ `catch(e) {}` rỗng — luôn log hoặc rethrow.
-- **`any` type in TypeScript**: Định nghĩa type rõ ràng.
+- **N+1 Query**: Always eager load relationships when querying.
+- **Hardcoded credentials**: Use env vars, never hardcode.
+- **Missing input validation**: Validate at system boundary, before processing.
+- **Raw SQL interpolation**: Use parameterized queries / ORM.
+- **Swallowed errors**: Never `catch(e) {}` empty — always log or rethrow.
+- **`any` type in TypeScript**: Define types explicitly.

@@ -1,71 +1,71 @@
-# .context — Hướng dẫn sử dụng
+# .context — Usage Guide
 
-Thư mục `.context/` là **memory** của dự án dành cho Copilot agents. Mọi quyết định, lịch sử thay đổi, lỗi đã gặp và test cases đều được lưu tại đây.
+The `.context/` directory is the project's **memory** for Copilot agents. All decisions, change history, encountered errors, and test cases are stored here.
 
-## Cấu trúc
+## Structure
 
 ```
 .context/
-├── README.md          # File này — hướng dẫn sử dụng
-├── HISTORY.md         # Chronological log mọi thay đổi
-├── DECISIONS.md       # Index các architectural decisions (ADR)
-├── ERRORS.md          # Index lỗi đã gặp & cách fix
-├── log.sh             # Script log nhanh vào HISTORY.md
-├── decisions/         # Chi tiết từng ADR: ADR-NNN-<slug>.md
-├── errors/            # Chi tiết từng error report
-├── sessions/          # Session logs theo ngày: session-YYYY-MM-DD.md
+├── README.md          # This file — usage guide
+├── HISTORY.md         # Chronological log of all changes
+├── DECISIONS.md       # Index of architectural decisions (ADR)
+├── ERRORS.md          # Index of known errors & fixes
+├── log.sh             # Quick log script for HISTORY.md
+├── decisions/         # ADR details: ADR-NNN-<slug>.md
+├── errors/            # Detailed error reports
+├── sessions/          # Session logs by date: session-YYYY-MM-DD.md
 └── test-cases/        # Test case specs: TC-MODULE-spec.md
 ```
 
-## Quy trình sử dụng
+## Workflow
 
-### Đầu mỗi session
+### At the start of each session
 
-Copilot sẽ tự động đọc:
-1. `HISTORY.md` — 10 entries gần nhất
-2. `DECISIONS.md` — tất cả decisions đang `Accepted`
-3. `ERRORS.md` — open errors cần tránh
+Copilot will automatically read:
+1. `HISTORY.md` — last 10 entries
+2. `DECISIONS.md` — all `Accepted` decisions
+3. `ERRORS.md` — open errors to avoid
 
-Hoặc chạy script: `source .context/inject-session-ctx.sh`
+Or run the script: `source .context/inject-session-ctx.sh`
 
-### Cuối mỗi session
+### At the end of each session
 
-Chạy prompt `update-context` — Copilot sẽ tự động cập nhật tất cả files.
+Run the `update-context` prompt — Copilot will automatically update all files.
 
-## Lệnh nhanh
+## Quick commands
 
 ```bash
-# Log nhanh một thay đổi
+# Quickly log a change
 ./.context/log.sh "feat: User auth module — AuthController.php"
 
-# Xem 20 entries gần nhất
+# View last 20 entries
 tail -20 .context/HISTORY.md
 
-# Tìm decision theo keyword
+# Find decision by keyword
 grep -i "database" .context/DECISIONS.md
 
-# Xem open errors
+# View open errors
 awk '/^## Open/,/^## Resolved/' .context/ERRORS.md
 ```
 
-## Khi clone repo mới
+## When cloning a new repo
 
 ```bash
-# Copy toàn bộ .context/ vào project mới (reset history)
+# Copy entire .context/ into new project (reset history)
 cp -r .context/ /path/to/new-project/
 
-# Xóa history cũ, giữ structure
+# Clear old history, keep structure
 echo "# Project History" > /path/to/new-project/.context/HISTORY.md
 echo "# Architectural Decisions" > /path/to/new-project/.context/DECISIONS.md
 echo "# Known Errors" > /path/to/new-project/.context/ERRORS.md
 ```
 
-## Không commit vào git (tùy chọn)
+## Optionally, do not commit to git
 
-Nếu không muốn track context trong git, thêm vào `.gitignore`:
+If you do not want to track context in git, add to `.gitignore`:
 ```
 .context/sessions/
 .context/test-cases/
 ```
 
-Nhưng **nên commit** `HISTORY.md`, `DECISIONS.md`, `ERRORS.md` để team share context.
+However, it is **recommended to commit** `HISTORY.md`, `DECISIONS.md`, `ERRORS.md` so the team can share context.

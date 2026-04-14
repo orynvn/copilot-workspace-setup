@@ -6,110 +6,110 @@ tools:
   - runCommands
   - search
 description: >
-  Phân tích và tìm bottleneck hiệu năng: DB queries (N+1), API latency, bundle size, Memory leaks.
-  Output report với các điểm cần cải thiện, ưu tiên theo impact.
+  Analyze and find performance bottlenecks: DB queries (N+1), API latency, bundle size, Memory leaks.
+  Output report with areas for improvement, prioritized by impact.
 ---
 
 # Profile Performance
 
-Phân tích hiệu năng của code/feature được chỉ định. Tìm bottlenecks, đề xuất cải thiện có đo lường cụ thể.
+Analyze the performance of the specified code/feature. Find bottlenecks and suggest measurable improvements.
 
-## Phạm vi phân tích
+## Scope of analysis
 
-**Target:** ${input:target:File, module, hoặc endpoint cần phân tích (vd: UserController, /api/products)}
+**Target:** ${input:target:File, module, or endpoint to analyze (e.g. UserController, /api/products)}
 **Stack:** ${input:stack:Laravel | Next.js | React | NestJS | Django | FastAPI}
-**Loại vấn đề nghi ngờ:** ${input:concern:N+1 queries | Slow API | Large bundle | Memory leak | Slow render | Tất cả}
+**Suspected issue type:** ${input:concern:N+1 queries | Slow API | Large bundle | Memory leak | Slow render | All}
 
 ---
 
-## Checklist phân tích theo stack
+## Analysis checklist by stack
 
 ### Database / ORM
 
 **N+1 Query Detection:**
 
 ```bash
-# Laravel — bật query log
+# Laravel — enable query log
 DB::enableQueryLog();
 // ... code
-dd(DB::getQueryLog()); // xem số queries
+dd(DB::getQueryLog()); // view query count
 
-# Django — Django Debug Toolbar hoặc:
+# Django — Django Debug Toolbar or:
 from django.db import connection
 print(len(connection.queries))
 
-# NestJS TypeORM — bật logging
+# NestJS TypeORM — enable logging
 { type: 'postgres', logging: true }
 ```
 
-Dấu hiệu N+1: vòng lặp `foreach` mà bên trong gọi DB, hoặc relationship access mà không eager load.
+Sign of N+1: a `foreach` loop that queries the DB inside, or relationship access without eager loading.
 
 **Index check:**
 ```sql
--- Xem query plan
+-- View query plan
 EXPLAIN ANALYZE SELECT ...;
 
--- Tìm sequential scans (không dùng index)
--- Nếu "Seq Scan" trên bảng lớn → cần index
+-- Find sequential scans (not using index)
+-- If "Seq Scan" on a large table → needs an index
 ```
 
-**Các pattern cần fix:**
-- [ ] `where` clause trên column không có index.
-- [ ] `SELECT *` thay vì chọn columns cần thiết.
-- [ ] Pagination thiếu (`LIMIT/OFFSET` lớn chậm → dùng cursor-based).
-- [ ] Missing `select_related`/`with()` trên relationships.
+**Patterns to fix:**
+- [ ] `where` clause on a column with no index.
+- [ ] `SELECT *` instead of selecting only needed columns.
+- [ ] Missing pagination (large `LIMIT/OFFSET` is slow → use cursor-based).
+- [ ] Missing `select_related`/`with()` on relationships.
 
 ### API Latency
 
 ```bash
-# Đo thời gian response
+# Measure response time
 curl -w "\nTime: %{time_total}s\n" -o /dev/null -s http://localhost:8000/api/endpoint
 
-# Laravel Telescope — xem slow queries
-# Next.js — Server Components timing trong browser DevTools
-# FastAPI — thêm middleware đo thời gian
+# Laravel Telescope — view slow queries
+# Next.js — Server Components timing in browser DevTools
+# FastAPI — add timing middleware
 ```
 
-Patterns cần check:
-- [ ] External API calls trong request cycle (nên async/queue).
-- [ ] File I/O đồng bộ trong handler (nên stream hoặc background job).
-- [ ] Large payload không được paginated.
-- [ ] Missing cache cho data ít thay đổi.
+Patterns to check:
+- [ ] External API calls inside the request cycle (should be async/queued).
+- [ ] Synchronous file I/O in handler (should stream or use background job).
+- [ ] Large payload not paginated.
+- [ ] Missing cache for rarely-changing data.
 
 ### Frontend Bundle Size
 
 ```bash
 # Vite / React / Next.js
 npx vite-bundle-visualizer        # React (Vite)
-npx @next/bundle-analyzer         # Next.js (cần ANALYZE=true)
+npx @next/bundle-analyzer         # Next.js (requires ANALYZE=true)
 
-# Kiểm tra chunk sizes
+# Check chunk sizes
 npm run build -- --report
 ```
 
-Patterns cần check:
-- [ ] Import cả thư viện thay vì tree-shake (`import _ from 'lodash'` → `import debounce from 'lodash/debounce'`).
-- [ ] Large images không optimize (dùng `next/image` hoặc WebP).
-- [ ] Component không lazy-load dù chỉ dùng ở một route.
-- [ ] Polyfills không cần thiết cho target browser.
+Patterns to check:
+- [ ] Importing entire libraries instead of tree-shaking (`import _ from 'lodash'` → `import debounce from 'lodash/debounce'`).
+- [ ] Large images not optimized (use `next/image` or WebP).
+- [ ] Components not lazy-loaded despite only being used on one route.
+- [ ] Unnecessary polyfills for target browser.
 
 ### Memory Leaks
 
 ```bash
 # Node.js (NestJS / Next.js)
 node --inspect server.js
-# Mở Chrome DevTools → Memory tab → Heap snapshot
+# Open Chrome DevTools → Memory tab → Heap snapshot
 
 # Python
 pip install memory-profiler
 python -m memory_profiler script.py
 ```
 
-Patterns cần check:
-- [ ] Event listener thêm liên tục mà không remove.
-- [ ] Cache không có TTL / eviction policy.
-- [ ] WebSocket connections không được cleanup khi disconnect.
-- [ ] Closure giữ reference đến large object.
+Patterns to check:
+- [ ] Event listeners added repeatedly without removal.
+- [ ] Cache with no TTL / eviction policy.
+- [ ] WebSocket connections not cleaned up on disconnect.
+- [ ] Closure holding reference to a large object.
 
 ---
 
@@ -123,9 +123,9 @@ Patterns cần check:
 
 ### Findings
 
-#### [CRITICAL] PERF-001: N+1 query trong UserService.getAll()
+#### [CRITICAL] PERF-001: N+1 query in UserService.getAll()
 **File:** `app/Services/UserService.php:34`
-**Impact:** 1 request → ~150 queries với 50 users → 2.3s response time
+**Impact:** 1 request → ~150 queries with 50 users → 2.3s response time
 **Fix:**
 ```php
 // Before
@@ -137,14 +137,14 @@ $users = User::with('profile')->get(); // 2 queries
 ```
 **Estimated improvement:** ~2s → ~50ms
 
-#### [MEDIUM] PERF-002: Bundle size — lodash imported toàn bộ
+#### [MEDIUM] PERF-002: Bundle size — entire lodash imported
 ...
 
-### Không phát hiện vấn đề
-- ✅ DB indexes đầy đủ cho WHERE clauses thường dùng
-- ✅ Pagination đã implement
+### No issues found
+- ✅ DB indexes sufficient for commonly used WHERE clauses
+- ✅ Pagination already implemented
 
-### Recommended actions (theo priority)
-1. Fix N+1 trong UserService (impact cao nhất)
+### Recommended actions (by priority)
+1. Fix N+1 in UserService (highest impact)
 2. ...
 ```

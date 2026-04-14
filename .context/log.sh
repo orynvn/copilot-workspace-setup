@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# log.sh — Quick log script cho .context/HISTORY.md
+# log.sh — Quick log script for .context/HISTORY.md
 # Usage: ./log.sh "feat: User auth module — AuthController.php"
-# hoặc: ./log.sh feat "User auth module" "AuthController.php"
+# or: ./log.sh feat "User auth module" "AuthController.php"
 
 set -euo pipefail
 

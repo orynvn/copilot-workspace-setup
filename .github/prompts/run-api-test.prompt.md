@@ -5,22 +5,22 @@ tools:
   - runCommands
   - readFile
 description: >
-  Chạy API/unit/integration tests, phân tích kết quả và báo cáo theo format chuẩn.
-  Tự động detect stack để dùng đúng test runner.
+  Run API/unit/integration tests, analyze results, and report in standard format.
+  Auto-detects stack to use the correct test runner.
 ---
 
 # Run API Test Prompt
 
-Chạy API và integration tests cho module chỉ định.
+Run API and integration tests for the specified module.
 
-## Thông tin
+## Information
 
-**Module/Feature:** ${input:module:Module cần test (vd: UserController, AuthService, hoặc để trống để test all)}
+**Module/Feature:** ${input:module:Module to test (e.g. UserController, AuthService, or leave blank to test all)}
 **Test type:** ${input:testType:unit | integration | all}
 
 ---
 
-## Thực thi
+## Execution
 
 ### 1. Stack Detection → Test Command
 
@@ -54,20 +54,20 @@ npm run test -- --verbose --testPathPattern=${input:module}
 npm run test:cov
 ```
 
-### 2. Chạy tests
+### 2. Run tests
 
-Thực thi command phù hợp với stack.
+Execute the command appropriate for the stack.
 
-### 3. Phân tích kết quả
+### 3. Analyze results
 
-Parse output để xác định:
-- Tổng số tests: pass / fail / skip
-- Chi tiết từng failing test: error message + stack trace
-- Coverage % (nếu có)
+Parse output to determine:
+- Total test count: pass / fail / skip
+- Details for each failing test: error message + stack trace
+- Coverage % (if available)
 
 ### 4. Report
 
-**Nếu tất cả PASS:**
+**If all PASS:**
 ```markdown
 ## ✅ API Test Report — ${input:module}
 
@@ -75,10 +75,10 @@ Parse output để xác định:
 **Tests:** X pass | 0 fail | 0 skip
 **Coverage:** XX%
 
-Tất cả tests đều pass. Ready to merge.
+All tests passed. Ready to merge.
 ```
 
-**Nếu có FAIL:**
+**If there are FAILs:**
 ```markdown
 ## ❌ API Test Report — ${input:module}
 
@@ -93,20 +93,20 @@ Tất cả tests đều pass. Ready to merge.
 \`\`\`
 <error message>
 \`\`\`
-**Root cause:** <phân tích>
-**Gợi ý fix:** <hướng sửa>
+**Root cause:** <analysis>
+**Suggested fix:** <direction>
 
 ---
-**Action required:** Fix Y failing tests trước khi merge.
+**Action required:** Fix Y failing tests before merging.
 ```
 
-### 5. Append ERRORS.md nếu phát hiện bug mới
+### 5. Append ERRORS.md if a new bug is found
 
-Nếu test reveal bug chưa biết:
+If tests reveal a previously unknown bug:
 ```
-[{{date}}] BUG: <mô tả> — <file>:<line> — Fixed: pending
+[{{date}}] BUG: <description> — <file>:<line> — Fixed: pending
 ```
 
 ---
 
-**Bắt đầu: Detect stack → chạy tests → report.**
+**Start: Detect stack → run tests → report.**

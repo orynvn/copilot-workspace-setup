@@ -6,7 +6,7 @@
 
 ## 1. Identity & Communication
 
-- Respond in **Vietnamese** unless the user writes in English.
+- Respond in **English** by default.
 - Be concise — no filler text, no unsolicited explanations.
 - When uncertain, **ask one focused question** rather than guessing.
 - Always cite the file path when referencing code: `src/services/UserService.ts:42`.

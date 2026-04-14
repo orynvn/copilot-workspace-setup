@@ -6,61 +6,61 @@ tools:
   - readFile
   - runCommands
 description: >
-  Viết test cases hoàn chỉnh cho một module hoặc feature. Output: file test thực tế
-  + spec document trong .context/test-cases/.
+  Write comprehensive test cases for a module or feature. Output: actual test file
+  + spec document in .context/test-cases/.
 ---
 
 # Write Test Cases Prompt
 
-Viết test cases đầy đủ cho module/feature chỉ định.
+Write comprehensive test cases for the specified module/feature.
 
-## Thông tin
+## Information
 
-**Module:** ${input:module:Tên module (vd: AUTH, USER, PRODUCT)}
-**Feature/File cần test:** ${input:target:File hoặc feature cần viết test (vd: UserController, useAuth hook)}
-**Loại test:** ${input:testType:unit | integration | e2e | all}
+**Module:** ${input:module:Module name (e.g. AUTH, USER, PRODUCT)}
+**Feature/File to test:** ${input:target:File or feature to write tests for (e.g. UserController, useAuth hook)}
+**Test type:** ${input:testType:unit | integration | e2e | all}
 
 ---
 
-## Thực thi
+## Execution
 
-### 1. Đọc code cần test
+### 1. Read the code to test
 
-Đọc file target để hiểu:
-- Tất cả public methods / endpoints / exported functions
-- Input types và validation rules
-- Possible return values và error states
+Read the target file to understand:
+- All public methods / endpoints / exported functions
+- Input types and validation rules
+- Possible return values and error states
 - Business logic paths (if/else, guard clauses)
 
-### 2. Xác định test cases
+### 2. Identify test cases
 
-Với mỗi function/endpoint, xác định:
+For each function/endpoint, identify:
 
-| Category | Mô tả |
+| Category | Description |
 |---|---|
-| Happy path | Input hợp lệ, output đúng kỳ vọng |
-| Edge case | Giá trị biên (empty, null, max, min) |
-| Error case | Input sai, not found, forbidden |
+| Happy path | Valid input, output matches expectation |
+| Edge case | Boundary values (empty, null, max, min) |
+| Error case | Invalid input, not found, forbidden |
 | Security case | Unauthorized, unauthenticated, injection attempt |
 
 ### 3. Assign Test IDs
 
 Format: `TC-${input:module}-NNN`
 
-Check `.context/test-cases/` để biết số thứ tự tiếp theo.
+Check `.context/test-cases/` to find the next sequential number.
 
-### 4. Viết test file
+### 4. Write test file
 
 **Laravel (Pest PHP):**
 ```php
 it('TC-${input:module}-001: returns 200 with valid payload', function () {
     // Arrange
     $user = User::factory()->create();
-    
+
     // Act
     $response = $this->actingAs($user)
                      ->postJson('/api/v1/...', [...]);
-    
+
     // Assert
     $response->assertStatus(200)
              ->assertJsonStructure(['success', 'data']);
@@ -73,10 +73,10 @@ describe('TC-${input:module}', () => {
   it('TC-${input:module}-001: renders correctly with valid props', () => {
     // Arrange
     const props = { ... }
-    
+
     // Act
     render(<Component {...props} />)
-    
+
     // Assert
     expect(screen.getByRole('heading')).toHaveTextContent('...')
   })
@@ -92,9 +92,9 @@ test('TC-E2E-001: user can complete flow', async ({ page }) => {
 })
 ```
 
-### 5. Lưu spec document
+### 5. Save spec document
 
-Tạo file `.context/test-cases/TC-${input:module}-spec.md`:
+Create file `.context/test-cases/TC-${input:module}-spec.md`:
 ```markdown
 # Test Cases: ${input:module}
 
@@ -107,10 +107,10 @@ Tạo file `.context/test-cases/TC-${input:module}-spec.md`:
 **Status:** ✅ Pass | ❌ Fail | ⏭️ Skip
 ```
 
-### 6. Chạy tests
+### 6. Run tests
 
-Sau khi viết xong, chạy `run-api-test` hoặc `run-e2e-test` prompt.
+After writing, run the `run-api-test` or `run-e2e-test` prompt.
 
 ---
 
-**Bắt đầu: Đọc file target → liệt kê test cases → viết → lưu spec.**
+**Start: Read target file → list test cases → write → save spec.**

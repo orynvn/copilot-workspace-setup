@@ -6,33 +6,33 @@ tools:
   - readFile
   - runCommands
 description: >
-  Tạo một module hoàn chỉnh theo đúng architecture của stack hiện tại.
-  Bao gồm: Controller/Component, Service, Repository/Store, Types, Tests.
+  Create a complete module following the current stack’s architecture.
+  Includes: Controller/Component, Service, Repository/Store, Types, Tests.
 ---
 
 # Create Module Prompt
 
-Tạo module mới hoàn chỉnh cho stack hiện tại.
+Create a complete new module for the current stack.
 
-## Thông tin module
+## Module information
 
-**Tên module:** ${input:moduleName:Tên module (PascalCase) — vd: Product, Order, Invoice}
-**Mô tả:** ${input:description:Module này làm gì?}
-**CRUD operations:** ${input:operations:Các operations cần (vd: list, show, create, update, delete)}
+**Module name:** ${input:moduleName:Module name (PascalCase) — e.g. Product, Order, Invoice}
+**Description:** ${input:description:What does this module do?}
+**CRUD operations:** ${input:operations:Operations needed (e.g. list, show, create, update, delete)}
 
 ---
 
-## Thực thi
+## Execution
 
 ### 1. Stack Detection & Planning
 
-Xác định stack:
+Identify stack:
 - `composer.json` + `artisan` → **Laravel module**
 - `package.json` dep `"next"` → **Next.js module**
 - `package.json` dep `"vite"` + `"react"` → **React module**
 - `package.json` dep `"vue"` → **Vue 3 module**
 
-Hiển thị files sẽ tạo theo stack → **chờ confirm**.
+Display files to create per stack → **wait for confirmation**.
 
 ### 2. Laravel Module Structure
 
@@ -89,17 +89,17 @@ src/
 └── services/${input:moduleName|lower}Service.ts
 ```
 
-### 6. Viết Tests
+### 6. Write Tests
 
-Sau khi tạo xong module, chạy `write-test-cases` prompt cho module này.
+After creating the module, run the `write-test-cases` prompt for this module.
 
 ### 7. Log
 
-Append vào `.context/HISTORY.md`:
+Append to `.context/HISTORY.md`:
 ```
 [{{date}}] feat: ${input:moduleName} module created — <list of files>
 ```
 
 ---
 
-**Bắt đầu với Stack Detection → hiển thị plan → chờ confirm.**
+**Start with Stack Detection → display plan → wait for confirmation.**

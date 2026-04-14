@@ -1,14 +1,14 @@
 # NestJS — Project-specific Copilot Instructions
 
-> **Override file cho dự án NestJS.**
-> Copy file này vào `.github/copilot-instructions.md` của project NestJS.
-> Các quy tắc trong file này kết hợp với global rules.
+> **Override file for NestJS projects.**
+> Copy this file to `.github/copilot-instructions.md` in your NestJS project.
+> Rules in this file combine with the global rules.
 
 ---
 
 ## Stack: NestJS + TypeScript
 
-### Phiên bản tối thiểu
+### Minimum version
 - Node.js: 20.x LTS
 - NestJS: 10.x
 - TypeScript: 5.x (strict mode)

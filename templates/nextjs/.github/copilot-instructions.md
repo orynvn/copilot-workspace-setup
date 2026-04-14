@@ -1,18 +1,18 @@
 # Next.js — Project-specific Copilot Instructions
 
-> **Override file cho dự án Next.js.**  
-> Copy file này vào `.github/copilot-instructions.md` của project Next.js.  
-> Các quy tắc trong file này kết hợp với global rules.
+> **Override file for Next.js projects.**
+> Copy this file to `.github/copilot-instructions.md` in your Next.js project.
+> Rules in this file combine with the global rules.
 
 ---
 
 ## Stack: Next.js + TypeScript
 
-### Phiên bản tối thiểu
+### Minimum version
 - Node.js: 20 LTS+
 - Next.js: 15.x (App Router)
 - TypeScript: 5.x strict mode
-- Database ORM: Prisma 5.x (preferred) hoặc Drizzle
+- Database ORM: Prisma 5.x (preferred) or Drizzle
 
 ---
 
@@ -22,7 +22,7 @@
 app/
 ├── (auth)/                    # Route group — auth pages, no URL segment
 ├── (dashboard)/               # Route group — authenticated pages
-│   ├── layout.tsx             # Dashboard layout với auth guard
+│   ├── layout.tsx             # Dashboard layout with auth guard
 │   └── dashboard/
 │       ├── page.tsx           # Server Component (default)
 │       ├── loading.tsx        # Suspense skeleton
@@ -55,7 +55,7 @@ types/
 
 ```
 User interaction
-  → Server Action (mutation) hoặc Server Component (read)
+  → Server Action (mutation) or Server Component (read)
   → lib/<domain>/db-function.ts (data access)
   → Prisma → Database
   → revalidatePath() / revalidateTag()
@@ -64,11 +64,11 @@ User interaction
 
 ## Key rules
 
-- **Server Components** là default — thêm `"use client"` chỉ khi cần hooks/events.
-- **Server Actions** cho mutations — không tạo API route chỉ để gọi từ frontend.
-- **Route handlers** (`route.ts`) chỉ cho external consumers (webhooks, mobile apps).
-- **Prisma Client** dùng singleton pattern trong `lib/db.ts`.
-- Mọi Server Action phải validate với **Zod** trước khi persist.
+- **Server Components** are the default — add `"use client"` only when hooks/events are needed.
+- **Server Actions** for mutations — do not create API routes just to call from the frontend.
+- **Route handlers** (`route.ts`) only for external consumers (webhooks, mobile apps).
+- **Prisma Client** uses the singleton pattern in `lib/db.ts`.
+- Every Server Action must validate with **Zod** before persisting.
 
 ## TypeScript strict mode
 
@@ -82,9 +82,9 @@ User interaction
 }
 ```
 
-- Không dùng `any` — dùng `unknown` hoặc proper types.
-- Mọi component props phải có type definition.
-- Dùng `z.infer<typeof schema>` thay vì define type thủ công cho form data.
+- Do not use `any` — use `unknown` or proper types.
+- Every component prop must have a type definition.
+- Use `z.infer<typeof schema>` instead of defining types manually for form data.
 
 ## Auth pattern (next-auth v5)
 
@@ -101,7 +101,7 @@ export { auth as middleware } from './lib/auth'
 ## Environment Variables
 
 ```bash
-# .env.local — không commit
+# .env.local — do not commit
 DATABASE_URL="postgresql://..."
 NEXTAUTH_SECRET="generated-secret"
 NEXTAUTH_URL="http://localhost:3000"
@@ -110,21 +110,21 @@ NEXTAUTH_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-Rule: chỉ `NEXT_PUBLIC_` cho values intentionally public.
+Rule: only `NEXT_PUBLIC_` for intentionally public values.
 
 ## Performance checklist
 
-- [ ] Images: `next/image` — không dùng raw `<img>`
-- [ ] Fonts: `next/font` — không dùng CSS `@import`
+- [ ] Images: `next/image` — do not use raw `<img>`
+- [ ] Fonts: `next/font` — do not use CSS `@import`
 - [ ] Heavy Client Components: `dynamic(() => import(...), { ssr: false })`
-- [ ] Mọi async boundary: `<Suspense>` + `loading.tsx`
-- [ ] DB queries: implement pagination — không fetch unlimited records
+- [ ] Every async boundary: `<Suspense>` + `loading.tsx`
+- [ ] DB queries: implement pagination — do not fetch unlimited records
 
 ## Testing
 
 - Unit/Integration: **Vitest** + React Testing Library
 - E2E: **Playwright**
-- Server Actions: test qua integration tests (mock DB với vitest)
+- Server Actions: test via integration tests (mock DB with vitest)
 - MSW (Mock Service Worker) cho mocking fetch trong tests
 
 ## Local development
@@ -151,8 +151,8 @@ npx prisma studio
 
 ## Forbidden patterns
 
-- ❌ `fetch('http://localhost:3000/api/...')` trong Server Components — import trực tiếp
-- ❌ Sensitive data trong `NEXT_PUBLIC_*` vars
-- ❌ `useEffect` chỉ để fetch data — dùng Server Component hoặc TanStack Query
+- ❌ `fetch('http://localhost:3000/api/...')` in Server Components — import directly
+- ❌ Sensitive data in `NEXT_PUBLIC_*` vars
+- ❌ `useEffect` only to fetch data — use Server Component or TanStack Query
 - ❌ `any` type — define proper types
-- ❌ Client Component wrapper toàn bộ page chỉ vì 1 button cần event handler
+- ❌ Client Component wrapping an entire page just because 1 button needs an event handler

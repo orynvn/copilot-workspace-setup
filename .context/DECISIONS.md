@@ -1,43 +1,43 @@
 # Architectural Decisions
 
-> Index tất cả architectural decisions của dự án.  
-> Chi tiết từng ADR: xem `.context/decisions/ADR-NNN-<slug>.md`
+> Index all architectural decisions for the project.
+> Details for each ADR: see `.context/decisions/ADR-NNN-<slug>.md`
 
 ## Index
 
 | ADR | Title | Date | Status |
 |-----|-------|------|--------|
-| — | *(Chưa có decision nào — thêm khi có)* | — | — |
+| — | *(No decisions yet — add when one is made)* | — | — |
 
 ## Statuses
 
-- `Proposed` — đang cân nhắc
-- `Accepted` — đã quyết định và đang áp dụng
-- `Deprecated` — không còn áp dụng (nhưng giữ lại để biết lý do)  
-- `Superseded by ADR-NNN` — bị thay thế
+- `Proposed` — under consideration
+- `Accepted` — decided and currently applied
+- `Deprecated` — no longer applicable (kept for reference)
+- `Superseded by ADR-NNN` — replaced by a newer decision
 
-## Hướng dẫn thêm ADR
+## How to add an ADR
 
-1. Chạy prompt `log-decision` trong Copilot.
-2. Hoặc thêm thủ công: tạo file `.context/decisions/ADR-NNN-<slug>.md` + update bảng trên.
+1. Run the `log-decision` prompt in Copilot.
+2. Or manually: create `.context/decisions/ADR-NNN-<slug>.md` + update the table above.
 
-## Mẫu ADR
+## ADR Template
 
 ```markdown
 # ADR-001: <Title>
 
 **Date:** YYYY-MM-DD
 **Status:** Accepted
-**Deciders:** <tên/team>
+**Deciders:** <name/team>
 
 ## Context
-<Tại sao cần quyết định này?>
+<Why does this decision need to be made?>
 
 ## Decision
-<Quyết định gì?>
+<What is the decision?>
 
 ## Alternatives Considered
-<Các phương án đã cân nhắc và lý do không chọn>
+<Options considered and reasons for not choosing them>
 
 ## Consequences
 ### Positive

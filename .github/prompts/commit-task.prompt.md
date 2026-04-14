@@ -4,91 +4,91 @@ tools:
   - codebase
   - runCommands
 description: >
-  Tạo git commit chuẩn Conventional Commits cho task vừa hoàn thành.
-  Tự động detect staged changes, generate message phù hợp, và commit.
-  KHÔNG tự push — user quyết định khi nào push lên remote.
+  Create a Conventional Commits-compliant git commit for the task just completed.
+  Auto-detects staged changes, generates an appropriate message, and commits.
+  Does NOT push automatically — the user decides when to push to remote.
 ---
 
 # Commit Task
 
-Tạo git commit chuẩn hóa cho những thay đổi vừa implement.
+Create a standardized git commit for the changes just implemented.
 
-## Thông tin commit
+## Commit information
 
-**Task/Feature:** ${input:taskName:Tên task hoặc feature vừa làm (vd: JWT refresh token, Fix null check in UserService)}
+**Task/Feature:** ${input:taskName:Name of the task or feature just completed (e.g. JWT refresh token, Fix null check in UserService)}
 **Type:** ${input:type:feat|fix|test|refactor|chore|docs|perf|ci}
-**Scope:** ${input:scope:Module/feature scope (vd: auth, user, payment, api) — để trống nếu global}
+**Scope:** ${input:scope:Module/feature scope (e.g. auth, user, payment, api) — leave blank if global}
 
 ---
 
-## Thực thi
+## Execution
 
-### Bước 1 — Kiểm tra trạng thái
+### Step 1 — Check status
 
 ```bash
 git status
 git diff --staged --stat
 ```
 
-Nếu **không có staged changes** → chạy:
+If **no staged changes** → run:
 ```bash
 git add -A
 git status
 ```
 
-Hiển thị danh sách files sẽ được commit. Nếu có file không liên quan đến task này (ví dụ: `.env`, `node_modules`, file cá nhân) → **không commit** và hỏi user.
+Display the list of files to be committed. If any file is unrelated to this task (e.g. `.env`, `node_modules`, personal files) → **do not commit** and ask the user.
 
-### Bước 2 — Kiểm tra safety
+### Step 2 — Safety check
 
-Trước khi commit, verify:
+Before committing, verify:
 
-- [ ] Không có file `.env`, `.env.local`, `*.pem`, `*.key` trong staged files.
-- [ ] Không có `node_modules/`, `vendor/`, `__pycache__/` trong staged files.
-- [ ] Không có file chứa hardcoded secrets (scan nhanh với `git diff --staged | grep -i "password\|secret\|api_key\|token" | grep "^+"`).
-- [ ] Tests đã pass (nếu chưa chạy → hỏi user có muốn commit không).
+- [ ] No `.env`, `.env.local`, `*.pem`, `*.key` files in staged files.
+- [ ] No `node_modules/`, `vendor/`, `__pycache__/` in staged files.
+- [ ] No hardcoded secrets (quick scan with `git diff --staged | grep -i "password\|secret\|api_key\|token" | grep "^+"`).
+- [ ] Tests have passed (if not — ask the user whether to commit anyway).
 
-Nếu phát hiện vấn đề → **dừng và báo user**, không commit.
+If a problem is found → **stop and report to user**, do not commit.
 
-### Bước 3 — Generate commit message
+### Step 3 — Generate commit message
 
-Áp dụng format **Conventional Commits**:
+Apply **Conventional Commits** format:
 
 ```
 <type>(<scope>): <subject>
 
-[body — nếu cần giải thích thêm]
+[body — if extra explanation is needed]
 
-[footer — nếu có breaking change hoặc issue reference]
+[footer — if there is a breaking change or issue reference]
 ```
 
 **Rules cho subject:**
-- Động từ ở hiện tại: `add`, `fix`, `update`, `remove`, `implement`, `refactor`
-- Viết thường, không dấu chấm cuối
-- Tối đa 72 ký tự
-- Tiếng Anh (git history là tài liệu kỹ thuật)
+- Use imperative present tense: `add`, `fix`, `update`, `remove`, `implement`, `refactor`
+- Lowercase, no trailing period
+- Maximum 72 characters
+- English (git history is technical documentation)
 
 **Rules cho body (optional):**
-- Giải thích *tại sao* thay đổi, không phải *làm gì* (code đã nói điều đó)
-- Mỗi dòng tối đa 72 ký tự
+- Explain *why* the change was made, not *what* (the code already says that)
+- Maximum 72 characters per line
 
-**Footer (dùng khi):**
-- Breaking change: `BREAKING CHANGE: <mô tả>`
+**Footer (use when):**
+- Breaking change: `BREAKING CHANGE: <description>`
 - Closes issue: `Closes #123`
 - Related to: `Refs #456`
 
-**Ví dụ commit messages:**
+**Example commit messages:**
 
 ```bash
-# Feature đơn giản
+# Simple feature
 feat(auth): add JWT refresh token rotation
 
-# Bug fix với context
+# Bug fix with context
 fix(user): add null check after async getUserById
 
 Previously the function would throw TypeError when user
 was not found in Redis cache before DB fallback.
 
-# Feature với breaking change
+# Feature with breaking change
 feat(api)!: change pagination format to cursor-based
 
 BREAKING CHANGE: response now returns `cursor` instead of `page`.
@@ -101,45 +101,45 @@ test(payment): add edge cases for zero-amount transactions
 ci: add pytest-cov threshold check at 80%
 ```
 
-### Bước 4 — Thực hiện commit
+### Step 4 — Execute commit
 
 ```bash
 git commit -m "<generated message>"
 ```
 
-Nếu có body/footer:
+If body/footer is needed:
 ```bash
 git commit -m "<subject>" -m "<body>" -m "<footer>"
 ```
 
-### Bước 5 — Xác nhận và report
+### Step 5 — Confirm and report
 
-Sau khi commit thành công:
+After a successful commit:
 
 ```bash
-git log --oneline -3  # hiển thị 3 commits gần nhất để confirm
+git log --oneline -3  # show last 3 commits to confirm
 ```
 
 Output report:
 
 ```markdown
-## ✅ Commit thành công
+## ✅ Commit successful
 
 **Hash:** `abc1234`
 **Message:** `feat(auth): add JWT refresh token rotation`
 **Files committed:** N files, +X insertions, -Y deletions
 
-**Next steps (chọn 1):**
-- Tiếp tục task tiếp theo trong breakdown
-- `git push origin <branch>` khi sẵn sàng deploy
-- Tạo Pull Request trên GitHub
+**Next steps (choose one):**
+- Continue to the next task in the breakdown
+- `git push origin <branch>` when ready to deploy
+- Create a Pull Request on GitHub
 ```
 
 ---
 
-## Lưu ý quan trọng
+## Important notes
 
-- **KHÔNG `git push`** — chỉ commit local. User tự quyết định push.
-- **KHÔNG `git commit --amend`** nếu đã push trước đó.
-- **KHÔNG `git commit -m "fix"` hay `wip`** — message phải có ý nghĩa.
-- Nếu task quá lớn và cần nhiều commits → mỗi commit = một logical change nhỏ, có thể đứng độc lập.
+- **DO NOT `git push`** — commit locally only. The user decides when to push.
+- **DO NOT `git commit --amend`** if already pushed.
+- **DO NOT `git commit -m "fix"` or `wip`** — messages must be meaningful.
+- If a task is too large and requires multiple commits → each commit = one small logical change that can stand alone.

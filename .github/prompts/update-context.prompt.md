@@ -5,87 +5,87 @@ tools:
   - readFile
   - codebase
 description: >
-  Cập nhật toàn bộ context files (.context/) để phản ánh trạng thái hiện tại
-  của dự án. Dùng cuối session hoặc sau khi hoàn thành một milestone.
+  Update all context files (.context/) to reflect the current state
+  of the project. Use at the end of a session or after completing a milestone.
 ---
 
 # Update Context Prompt
 
-Đồng bộ `.context/` để phản ánh trạng thái thực tế của dự án.
+Sync `.context/` to reflect the actual state of the project.
 
-## Thông tin
+## Information
 
-**Session/milestone:** ${input:session:Mô tả ngắn session này làm gì (vd: Sprint 3 - Auth module)}
-**Changes made:** ${input:changes:Những gì đã thay đổi trong session này}
+**Session/milestone:** ${input:session:Brief description of what this session did (e.g. Sprint 3 - Auth module)}
+**Changes made:** ${input:changes:What changed in this session}
 
 ---
 
-## Thực thi
+## Execution
 
-### 1. Cập nhật HISTORY.md
+### 1. Update HISTORY.md
 
-Đọc git log hoặc danh sách files đã thay đổi, append các entries còn thiếu:
+Read the git log or list of changed files, append any missing entries:
 ```
 [{{date}}] ${input:changes}
 ```
 
-Format mỗi entry:
+Format for each entry:
 ```
 [YYYY-MM-DD] <type>: <description> — <file/module>
 ```
 Types: `feat`, `fix`, `refactor`, `chore`, `test`, `docs`
 
-### 2. Kiểm tra DECISIONS.md
+### 2. Check DECISIONS.md
 
-Review các decisions trong session vừa rồi:
-- Có architectural choice mới nào chưa được log?
-- Nếu có → chạy `log-decision` prompt cho từng decision.
+Review any decisions made this session:
+- Any new architectural choices not yet logged?
+- If yes → run the `log-decision` prompt for each one.
 
-### 3. Kiểm tra ERRORS.md
+### 3. Check ERRORS.md
 
-Review bugs/issues gặp phải trong session:
-- Append errors mới theo format:
+Review bugs/issues encountered this session:
+- Append new errors in the format:
   ```
-  [{{date}}] ERROR: <mô tả> | Root cause: <nguyên nhân> | Fix: <cách sửa> | File: <path>
+  [{{date}}] ERROR: <description> | Root cause: <cause> | Fix: <solution> | File: <path>
   ```
-- Update status của errors cũ đã fix: `Fixed: {{date}}`
+- Update status of old errors that were fixed: `Fixed: {{date}}`
 
-### 4. Tổng kết session log
+### 4. Session log summary
 
-Tạo hoặc cập nhật `.context/sessions/session-<date>.md`:
+Create or update `.context/sessions/session-<date>.md`:
 
 ```markdown
 # Session Log: {{date}}
 
-## Mục tiêu
+## Goal
 ${input:session}
 
-## Đã hoàn thành
+## Completed
 - [ ] <task 1>
 - [ ] <task 2>
 
-## Quyết định trong session
+## Decisions in this session
 - ADR-NNN: <decision title> (if any)
 
-## Vấn đề gặp phải
-- <issue 1> → <cách giải quyết>
+## Issues encountered
+- <issue 1> → <resolution>
 
-## Việc cần làm tiếp theo
+## Next steps
 - <next task 1>
 - <next task 2>
 
-## Files đã thay đổi
+## Changed files
 ${input:changes}
 ```
 
 ### 5. Verify context integrity
 
-Kiểm tra:
-- [ ] `HISTORY.md` có entry cho ngày hôm nay chưa?
-- [ ] `DECISIONS.md` có đủ tất cả major decisions chưa?
-- [ ] `ERRORS.md` có resolved errors nào cần update status không?
-- [ ] Test cases có sync với `.context/test-cases/` không?
+Check:
+- [ ] Does `HISTORY.md` have an entry for today?
+- [ ] Does `DECISIONS.md` include all major decisions?
+- [ ] Are there any resolved errors in `ERRORS.md` that need a status update?
+- [ ] Are test cases in sync with `.context/test-cases/`?
 
 ---
 
-**Thực thi tất cả steps — báo cáo summary sau khi xong.**
+**Execute all steps — report a summary when done.**

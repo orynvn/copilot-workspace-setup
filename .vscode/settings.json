@@ -2,41 +2,41 @@
   // ─── Agent & Chat ───────────────────────────────────────────────────────────
   "chat.agent.enabled": true,
 
-  // Custom agents: thư mục .github/agents/
+  // Custom agents: .github/agents/ directory
   "chat.agentFilesLocations": {
     ".github/agents": true
   },
 
-  // Prompt files: thư mục .github/prompts/
+  // Prompt files: .github/prompts/ directory
   "chat.promptFilesLocations": {
     ".github/prompts": true
   },
 
-  // Instructions files: thư mục .github/instructions/
+  // Instructions files: .github/instructions/ directory
   "chat.instructionsFilesLocations": {
     ".github/instructions": true
   },
 
-  // Hooks: VS Code auto-load từ .github/hooks/ theo mặc định
-  // (default đã include .github/hooks, không cần override trừ khi muốn thêm)
+  // Hooks: VS Code auto-loads from .github/hooks/ by default
+  // (default already includes .github/hooks — only override to add extra paths)
   "chat.hookFilesLocations": {
     ".github/hooks": true
   },
 
-  // Cho phép subagents gọi subagents (nested, tối đa depth 5)
+  // Allow subagents to call subagents (nested, max depth 5)
   "chat.subagents.allowInvocationsFromSubagents": true,
 
-  // Tự động fix lỗi compiler/lint sau khi agent edit file
+  // Auto-fix compiler / lint errors after the agent edits a file
   "github.copilot.chat.agent.autoFix": true,
 
   // ─── MCP Servers ────────────────────────────────────────────────────────────
-  // Config trong .vscode/mcp.json (auto-discovered bởi VS Code)
+  // Config in .vscode/mcp.json (auto-discovered by VS Code)
 
   // ─── Editor ─────────────────────────────────────────────────────────────────
   "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
 
-  // ─── Extensions khuyến nghị ─────────────────────────────────────────────────
-  // Xem .vscode/extensions.json
+  // ─── Recommended extensions ──────────────────────────────────────────────────
+  // See .vscode/extensions.json
 }

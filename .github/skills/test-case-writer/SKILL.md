@@ -1,30 +1,30 @@
 # SKILL: Test Case Writer
 
-## Mục đích
+## Purpose
 
-Skill này hướng dẫn Copilot viết test cases đầy đủ, có cấu trúc, và đúng format chuẩn dự án.
+This skill guides Copilot to write comprehensive, structured, standards-compliant test cases.
 
-## Khi nào dùng
+## When to use
 
-- Khi được yêu cầu viết test cho một function, class, endpoint, hoặc component.
-- Khi chạy prompt `write-test-cases`.
-- Sau khi Implementer hoàn thành một task.
+- When asked to write tests for a function, class, endpoint, or component.
+- When running the `write-test-cases` prompt.
+- After the Implementer completes a task.
 
 ## Workflow
 
-### Bước 1: Đọc và phân tích code
+### Step 1: Read and analyze code
 
-1. Đọc toàn bộ file cần test.
-2. Lập danh sách tất cả:
+1. Read the entire file to be tested.
+2. List all:
    - Public methods / exported functions
-   - API endpoints và HTTP methods
-   - Input parameters và type constraints
-   - Return values và error states
+   - API endpoints and HTTP methods
+   - Input parameters and type constraints
+   - Return values and error states
    - Business logic branches (if/else)
 
-### Bước 2: Thiết kế test matrix
+### Step 2: Design test matrix
 
-Với mỗi unit cần test, tạo matrix:
+For each unit to test, create a matrix:
 
 ```
 | Test ID | Category | Input | Expected Output |
@@ -35,33 +35,33 @@ Với mỗi unit cần test, tạo matrix:
 | TC-X-004 | security | SQL injection attempt | 422 |
 ```
 
-### Bước 3: Viết test file
+### Step 3: Write test file
 
-**Format ID:** `TC-<MODULE>-<NNN>` (3 digits, sequential)
+**ID Format:** `TC-<MODULE>-<NNN>` (3 digits, sequential)
 
 **AAA Pattern obligatoire:**
 ```
-// Arrange — setup dữ liệu và mocks
-// Act — thực thi action cần test
-// Assert — kiểm tra kết quả
+// Arrange — set up data and mocks
+// Act — execute the action being tested
+// Assert — verify the result
 ```
 
-**Naming:** Test description = hành vi hệ thống, không phải implementation:
+**Naming:** Test description = system behavior, not implementation:
 - ✅ `"returns 401 when Bearer token is missing"`
 - ❌ `"test auth middleware check"`
 
-### Bước 4: Coverage checklist
+### Step 4: Coverage checklist
 
-Trước khi báo done, verify:
-- [ ] Ít nhất 1 happy path per function/endpoint
-- [ ] Ít nhất 1 edge case (null, empty, boundary values)
-- [ ] Ít nhất 1 error/rejection case
-- [ ] Auth/authz cases nếu endpoint requires auth
-- [ ] Không có test phụ thuộc vào thứ tự chạy
+Before marking done, verify:
+- [ ] At least 1 happy path per function/endpoint
+- [ ] At least 1 edge case (null, empty, boundary values)
+- [ ] At least 1 error/rejection case
+- [ ] Auth/authz cases if endpoint requires auth
+- [ ] No test depends on execution order
 
-### Bước 5: Lưu spec document
+### Step 5: Save spec document
 
-Tạo `.context/test-cases/TC-<MODULE>-spec.md` với danh sách đầy đủ test IDs và descriptions.
+Create `.context/test-cases/TC-<MODULE>-spec.md` with the full list of test IDs and descriptions.
 
 ## Framework Templates
 
@@ -78,7 +78,7 @@ describe('UserController', function () {
     });
 
     it('TC-USER-001: returns user list for authenticated request', function () {
-        // Arrange — user đã được tạo ở beforeEach
+        // Arrange — user created in beforeEach
 
         // Act
         $response = $this->actingAs($this->user)
@@ -131,7 +131,7 @@ describe('UserForm', () => {
     render(<UserForm onSubmit={vi.fn()} />)
     await userEvent.type(screen.getByLabelText('Email'), 'not-an-email')
     await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(screen.getByText('Email không hợp lệ')).toBeInTheDocument()
+    expect(screen.getByText('Invalid email')).toBeInTheDocument()
   })
 })
 ```
@@ -149,19 +149,19 @@ test.describe('TC-E2E: User Authentication', () => {
     // Act
     await page.getByLabel('Email').fill('admin@test.com')
     await page.getByLabel('Password').fill('password')
-    await page.getByRole('button', { name: 'Đăng nhập' }).click()
+    await page.getByRole('button', { name: 'Login' }).click()
 
     // Assert
     await expect(page).toHaveURL('/dashboard')
-    await expect(page.getByText('Chào mừng')).toBeVisible()
+    await expect(page.getByText('Welcome')).toBeVisible()
   })
 
   test('TC-E2E-002: shows error for wrong password', async ({ page }) => {
     await page.goto('/login')
     await page.getByLabel('Email').fill('admin@test.com')
     await page.getByLabel('Password').fill('wrong')
-    await page.getByRole('button', { name: 'Đăng nhập' }).click()
-    await expect(page.getByText('Thông tin đăng nhập không đúng')).toBeVisible()
+    await page.getByRole('button', { name: 'Login' }).click()
+    await expect(page.getByText('Invalid credentials')).toBeVisible()
   })
 })
 ```
@@ -172,5 +172,5 @@ test.describe('TC-E2E: User Authentication', () => {
 - ❌ Testing implementation details: `expect(component.state.isLoading).toBe(true)`
 - ❌ Shared mutable state between tests
 - ❌ Hardcoded IDs: `User::find(1)`
-- ❌ `sleep()` / `setTimeout()` — dùng proper async waiters
-- ❌ Tests that only test mocks (không test behavior thực)
+- ❌ `sleep()` / `setTimeout()` — use proper async waiters
+- ❌ Tests that only test mocks (not testing real behavior)

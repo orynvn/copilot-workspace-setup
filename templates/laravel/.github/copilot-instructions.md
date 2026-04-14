@@ -1,18 +1,18 @@
 # Laravel — Project-specific Copilot Instructions
 
-> **Override file cho dự án Laravel.**  
-> Copy file này vào `.github/copilot-instructions.md` của project Laravel.  
-> Các quy tắc trong file này kết hợp với global rules.
+> **Override file for Laravel projects.**
+> Copy this file to `.github/copilot-instructions.md` in your Laravel project.
+> Rules in this file combine with the global rules.
 
 ---
 
 ## Stack: Laravel + PHP
 
-### Phiên bản tối thiểu
+### Minimum version
 - PHP: 8.2+
 - Laravel: 11.x
 - MySQL: 8.0+ / PostgreSQL 15+
-- Redis: 7.x (cho cache, queue, session)
+- Redis: 7.x (for cache, queue, session)
 
 ---
 
@@ -40,10 +40,10 @@ app/
 ## Patterns
 
 - **Controller → Service → Repository → Model**
-- Controllers chỉ handle HTTP: validate request, call service, return response.
-- Services chứa business logic — không directly query DB.
-- Repositories chứa Eloquent queries — nhận/trả về Models hoặc Collections.
-- API responses luôn dùng Resource classes.
+- Controllers only handle HTTP: validate request, call service, return response.
+- Services contain business logic — do not directly query the DB.
+- Repositories contain Eloquent queries — receive/return Models or Collections.
+- API responses always use Resource classes.
 
 ## Route conventions
 
@@ -55,7 +55,7 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
 });
 ```
 
-## Response format chuẩn
+## Standard response format
 
 ```json
 {
@@ -68,18 +68,18 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
 
 ## Queue & Jobs
 
-- Luôn implement `ShouldQueue` cho time-consuming operations.
-- Khai báo `$tries`, `$timeout`, `$backoff` cho mọi Job.
-- Dùng `$job->fail()` thay vì throw exception khi cần dừng.
+- Always implement `ShouldQueue` for time-consuming operations.
+- Declare `$tries`, `$timeout`, `$backoff` for every Job.
+- Use `$job->fail()` instead of throwing an exception when stopping is needed.
 
 ## Testing
 
 - Framework: **Pest PHP**
 - Feature tests: `tests/Feature/` — test HTTP endpoints.
 - Unit tests: `tests/Unit/` — test Services, Repositories.
-- Dùng `RefreshDatabase` hoặc `DatabaseTransactions` trait.
-- Factories: tạo cho mọi Model.
-- Không mock Eloquent — dùng test DB thật (SQLite in-memory hoặc MySQL test DB).
+- Use `RefreshDatabase` or `DatabaseTransactions` trait.
+- Factories: create for every Model.
+- Do not mock Eloquent — use a real test DB (SQLite in-memory or MySQL test DB).
 
 ## Local development commands
 
@@ -102,8 +102,8 @@ php artisan migrate:fresh --seed
 
 ## Forbidden patterns
 
-- ❌ `$request->all()` trong business logic — dùng `$request->validated()`
-- ❌ Logic trong Controller — move xuống Service
-- ❌ DB query trong Controller hoặc View — move xuống Repository
-- ❌ `Auth::user()` trong Service — inject qua parameter
-- ❌ Hardcoded `env()` calls ngoài config files
+- ❌ `$request->all()` in business logic — use `$request->validated()`
+- ❌ Logic in Controller — move to Service
+- ❌ DB query in Controller or View — move to Repository
+- ❌ `Auth::user()` in Service — inject via parameter
+- ❌ Hardcoded `env()` calls outside config files
