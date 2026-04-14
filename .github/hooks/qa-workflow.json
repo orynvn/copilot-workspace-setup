@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/inject-session-ctx.sh",
+        "osx": "./.github/hooks/scripts/inject-session-ctx.sh",
+        "linux": "./.github/hooks/scripts/inject-session-ctx.sh",
+        "timeout": 10
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/check-task-done.sh",
+        "osx": "./.github/hooks/scripts/check-task-done.sh",
+        "linux": "./.github/hooks/scripts/check-task-done.sh",
+        "timeout": 5
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/post-edit-audit.sh",
+        "osx": "./.github/hooks/scripts/post-edit-audit.sh",
+        "linux": "./.github/hooks/scripts/post-edit-audit.sh",
+        "timeout": 15
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/session-stop.sh",
+        "osx": "./.github/hooks/scripts/session-stop.sh",
+        "linux": "./.github/hooks/scripts/session-stop.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}
+

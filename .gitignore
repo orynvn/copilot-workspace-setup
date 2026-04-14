@@ -1,0 +1,31 @@
+# copilot-workspace-setup — gitignore
+
+# MCP Error Learning server — tracked in separate repo
+mcp-error-learning/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+.npm/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# Secrets
+.env
+.env.local
+*.pem
+*.key

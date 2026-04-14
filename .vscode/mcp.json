@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/mcp.json",
+  "description": "MCP servers config cho Copilot Agent workspace",
+  "servers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "description": "Context7 — Fetch up-to-date library documentation (React, Next.js, Laravel, Vue, etc.)"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "description": "GitHub MCP (io.github.github/github-mcp-server) — Issues, PRs, code search, Actions workflow runs, check runs, CI logs"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp"],
+      "description": "Playwright MCP — Browser automation for E2E testing",
+      "installRequired": true,
+      "installCommand": "npm install -g @playwright/mcp"
+    },
+    "error-learning": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "mcp_error_learning"],
+      "cwd": "${workspaceFolder}/mcp-error-learning",
+      "env": {
+        "DB_PATH": "${workspaceFolder}/mcp-error-learning/data/errors.db"
+      },
+      "description": "Error Learning MCP (Phase 1: SQLite) — knowledge base lỗi local. search_similar / record_error / get_patterns / update_outcome. Roadmap: Phase 2 PostgreSQL+pgvector, Phase 3 semantic AI.",
+      "installRequired": true,
+      "installCommand": "cd mcp-error-learning && pip install -e ."
+    }
+  }
+}
