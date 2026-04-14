@@ -35,7 +35,8 @@ copilot-workspace-setup/
 │   │   ├── qa-tester.agent.md         # Sub-agent chạy tests (user-invocable: false)
 │   │   ├── debugger.agent.md          # Bug fix + CI failure (user-invocable: true)
 │   │   ├── security-auditor.agent.md  # OWASP Top 10 audit (user-invocable: true)
-│   │   └── code-reviewer.agent.md     # PR review inline (user-invocable: true)
+│   │   ├── code-reviewer.agent.md     # PR review inline (user-invocable: true)
+│   │   └── quick.agent.md             # Thực thi đơn giản, không pipeline (user-invocable: true)
 │   ├── instructions/                  # File-scoped rules theo stack
 │   │   ├── laravel.instructions.md    # applyTo: **/*.php
 │   │   ├── nextjs.instructions.md     # applyTo: app/**/*.{ts,tsx}
@@ -192,7 +193,11 @@ Sau mỗi phase, **handoff buttons** xuất hiện để chuyển tiếp sang ag
 | `qa-tester` | Chạy tests, root cause analysis | Subagent only || `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Hiện trong dropdown |
 | `security-auditor` | OWASP Top 10 audit, on-demand | Hiện trong dropdown |
 | `code-reviewer` | PR review inline comments qua GitHub MCP | Hiện trong dropdown |
+| `quick` | Thực thi đơn giản — không plan, không test, thực thi trực tiếp | Hiện trong dropdown |
+
 > Worker agents có `user-invocable: false` — ẩn khỏi dropdown, chỉ được gọi bởi coordinator.
+>
+> Dùng `quick` khi tác vụ là sửa 1 file, dịch thuật, đổi config, hay cleanup — rõ ràng không cần pipeline đầy đủ.
 
 ---
 
