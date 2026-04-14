@@ -137,6 +137,22 @@ rm -rf temp-setup
 cp templates/nestjs/.github/copilot-instructions.md .github/copilot-instructions.md
 ```
 
+### Cài đặt Error Learning MCP (tùy chọn)
+
+```bash
+# Clone MCP server vào project (cùng cấp .github/)
+cd /path/to/your-project
+git clone https://github.com/orynvn/mcp-error-learning.git
+
+# Install
+python3 -m pip install -e mcp-error-learning/
+
+# VS Code tự độc config từ .vscode/mcp.json — không cần config thêm
+```
+
+> MCP server sẽ lưu knowledge base tại `mcp-error-learning/data/errors.db`.
+> Thư mục `mcp-error-learning/` có repo riêng, đã được thêm vào `.gitignore` của project.
+
 ---
 
 ## Workflow — Tự động qua Native Subagents

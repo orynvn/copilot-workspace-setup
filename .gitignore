@@ -3,6 +3,9 @@
 # MCP Error Learning server — tracked in separate repo
 mcp-error-learning/
 
+# Context session logs — per-machine, should not be committed
+.context/sessions/*.md
+
 # Python
 __pycache__/
 *.py[cod]
