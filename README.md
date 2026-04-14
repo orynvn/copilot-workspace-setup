@@ -51,6 +51,7 @@ copilot-workspace-setup/
 │   │   ├── run-api-test.prompt.md
 │   │   ├── run-e2e-test.prompt.md
 │   │   ├── profile-performance.prompt.md
+│   │   ├── commit-task.prompt.md
 │   │   ├── log-decision.prompt.md
 │   │   └── update-context.prompt.md
 │   ├── skills/                        # Agent skills (explicit #file reference)
