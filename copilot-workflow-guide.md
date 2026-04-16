@@ -159,6 +159,74 @@ Phase 1 (hiện tại): SQLite local, single project. Đủ để validate conce
 
 ---
 
+## Thêm agent chuyên môn cho từng dự án
+
+Các agent trong template là general-purpose. Với dự án có workflow đặc thù, bạn có thể thêm agent riêng vào `.github/agents/` của project.
+
+**Khi nào nên thêm agent mới vs. dùng `quick`:**
+
+| Dùng `quick` | Tạo agent mới |
+|---|---|
+| Task đơn lẻ, không lặp lại | Task lặp lại nhiều lần |
+| Không cần tool đặc biệt | Cần tool set hoặc MCP riêng |
+| Không có workflow cố định | Có quy trình kiểm tra cụ thể |
+
+**Template tối thiểu** — tạo file `.github/agents/<tên>.agent.md`:
+
+```markdown
+---
+description: <Mô tả ngắn — hiện trong agent picker>
+user-invocable: true
+tools:
+  - codebase
+  - readFile
+  - editFiles
+  - runCommands
+---
+
+# <Tên Agent>
+
+Bạn là <vai trò>. Nhiệm vụ: <mô tả>.
+
+## Quy trình
+1. ...
+2. ...
+```
+
+**Ví dụ thực tế — `migration-reviewer` cho dự án Django:**
+
+```markdown
+---
+description: Migration Reviewer — Kiểm tra Django migrations trước khi merge. Phát hiện missing indexes, breaking changes, và data loss risks.
+user-invocable: true
+tools:
+  - codebase
+  - readFile
+  - runCommands
+handoffs:
+  - label: "🔧 Fix với Implementer"
+    agent: implementer
+    prompt: "Fix các migration issues sau: [danh sách findings]"
+    send: false
+---
+
+# Migration Reviewer
+
+Bạn là Migration Reviewer. Kiểm tra tất cả Django migrations chưa được apply.
+
+## Checklist
+- [ ] Missing index trên foreign key?
+- [ ] Xóa column có data không?
+- [ ] Thay đổi field type có backward compatible không?
+- [ ] Migration có thể chạy zero-downtime không?
+```
+
+Agent này được gọi trực tiếp bằng `#migration-reviewer` — không cần khai báo trong `oryn-dev` vì người dùng gọi thủ công.
+
+Nếu muốn `oryn-dev` tự động gọi agent này trong pipeline (ví dụ: sau mỗi lần implement xong), thêm vào `agents:` list và `handoffs:` của `oryn-dev.agent.md`.
+
+---
+
 ## Cấu trúc file đầy đủ
 
 ```

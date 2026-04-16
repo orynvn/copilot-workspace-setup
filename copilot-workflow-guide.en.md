@@ -157,6 +157,74 @@ Phase 1 (current): SQLite local, single project. Enough to validate the concept 
 
 ---
 
+## Adding Project-Specific Agents
+
+The agents in this template are general-purpose. For projects with specific workflows, you can add custom agents to `.github/agents/` in your project.
+
+**When to create a new agent vs. use `quick`:**
+
+| Use `quick` | Create a new agent |
+|---|---|
+| One-off task, won't repeat | Repeated task across the project lifecycle |
+| No special toolset needed | Needs a specific tool set or MCP |
+| No fixed workflow | Has a defined checklist or review process |
+
+**Minimal template** — create `.github/agents/<name>.agent.md`:
+
+```markdown
+---
+description: <Short description — shown in agent picker>
+user-invocable: true
+tools:
+  - codebase
+  - readFile
+  - editFiles
+  - runCommands
+---
+
+# <Agent Name>
+
+You are <role>. Your job: <description>.
+
+## Process
+1. ...
+2. ...
+```
+
+**Real example — `migration-reviewer` for a Django project:**
+
+```markdown
+---
+description: Migration Reviewer — Checks Django migrations before merge. Detects missing indexes, breaking changes, and data loss risks.
+user-invocable: true
+tools:
+  - codebase
+  - readFile
+  - runCommands
+handoffs:
+  - label: "🔧 Fix with Implementer"
+    agent: implementer
+    prompt: "Fix the following migration issues: [findings list]"
+    send: false
+---
+
+# Migration Reviewer
+
+You are Migration Reviewer. Check all unapplied Django migrations.
+
+## Checklist
+- [ ] Missing index on foreign key?
+- [ ] Dropping a column that has data?
+- [ ] Field type change — is it backward compatible?
+- [ ] Can the migration run zero-downtime?
+```
+
+This agent is invoked directly with `#migration-reviewer` — no need to declare it in `oryn-dev` since users call it manually.
+
+If you want `oryn-dev` to call it automatically in the pipeline (e.g., after every implementation), add it to the `agents:` list and `handoffs:` in `oryn-dev.agent.md`.
+
+---
+
 ## Full File Structure
 
 ```

@@ -18,6 +18,10 @@ agents:
   - debugger
   - security-auditor
 handoffs:
+  - label: "🏗️ Design with Architect"
+    agent: architect
+    prompt: "Analyze the requirements above and produce a system design document with phase plans in .context/plans/."
+    send: false
   - label: "📋 Run Planner"
     agent: planner
     prompt: "Analyze the above requirement and create a detailed task breakdown."
