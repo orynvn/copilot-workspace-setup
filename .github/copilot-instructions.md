@@ -34,10 +34,13 @@ After detection, apply the matching `.github/instructions/<stack>.instructions.m
 ## 3. Context Memory Protocol
 
 ### 3.1 Read before acting
-At the start of **every session**, silently read:
-1. `.context/HISTORY.md` — recent decisions & changes
-2. `.context/DECISIONS.md` — architectural decisions index
-3. `.context/ERRORS.md` — known errors to avoid
+Only for **complex or multi-step tasks** (full pipeline, architecture, refactor):
+1. **HISTORY** — already injected at session start (last 15 entries). Do not re-read the full file.
+2. **DECISIONS** — search by task keyword: `grep -i "<keyword>" .context/DECISIONS.md`
+3. **ERRORS** — search by task keyword: `grep -i "<keyword>" .context/ERRORS.md`
+4. **FILE-INDEX** — already injected at session start. Search by module name if needed.
+
+> Skip context reads entirely for: single-file edits, documentation, config changes, quick fixes.
 
 ### 3.2 Write after acting
 After completing a task:
@@ -49,20 +52,27 @@ After completing a task:
 - If a bug/error was fixed → append to `.context/ERRORS.md`.
 
 ### 3.3 Session context
-Use `.context/sessions/` to store per-session logs when working on multi-step tasks.
+Session context (HISTORY tail + FILE-INDEX) is injected automatically at session start via the VS Code hook. No manual session logs needed.
 
 ---
 
-## 4. Workflow: Plan → Implement → Test
+## 4. Workflow: Route by Complexity
 
-Every non-trivial task MUST follow this sequence:
+Choose the workflow tier based on task scope — this is the primary token optimization gate:
 
-```
-PLAN  →  IMPLEMENT  →  TEST  →  LOG
-```
+| Task type | VI triggers | Route | Pipeline |
+|---|---|---|---|
+| Docs, config, single-file fix | sửa nhanh, chỉnh, cập nhật docs, fix config | `quick` agent | Direct implement → LOG |
+| Small feature, 1-2 files | thêm tính năng, tạo API, viết service | `planner` + `implementer` | PLAN → IMPLEMENT → LOG |
+| Feature with tests required | viết test, thêm unit test, cần coverage | + `tc-writer` + `qa-tester` | + TEST |
+| Phase file exists (`.context/plans/phase-N.md`) | implement phase, chạy phase | `oryn-dev` phase-first | Read phase → IMPLEMENT → TEST (if required) → COMMIT → LOG |
+| Need phases, arch already known | lên phases, viết kế hoạch, phân phase, tạo plan | `phase-writer` | Analyze → Write phase-N.md → oryn-dev |
+| Complex / multi-module / arch | thiết kế, refactor toàn bộ, kiến trúc, tái cấu trúc | `architect` → `oryn-dev` | DESIGN → PLAN → IMPLEMENT → TEST → COMMIT → LOG |
+
+> **Default to the lightest sufficient tier.** Only escalate if the current tier is insufficient.
 
 ### 4.1 PLAN phase
-1. Understand the requirement — re-state it in 1-2 sentences.
+1. Re-state requirement in 1-2 sentences.
 2. List files to create/modify.
 3. Identify edge cases & risks.
 4. **Wait for user confirmation** before proceeding.
@@ -70,7 +80,7 @@ PLAN  →  IMPLEMENT  →  TEST  →  LOG
 ### 4.2 IMPLEMENT phase
 - One logical change per commit scope.
 - Never modify files outside the agreed plan without asking.
-- Follow the naming conventions in §5.
+- Follow naming conventions: files=kebab-case, classes=PascalCase, functions=camelCase, constants=UPPER_SNAKE_CASE, DB=snake_case.
 
 ### 4.3 TEST phase
 - After implementation, suggest test cases or run existing ones.
@@ -78,27 +88,12 @@ PLAN  →  IMPLEMENT  →  TEST  →  LOG
 
 ### 4.4 LOG phase
 - Update `.context/HISTORY.md`.
+- Update `.context/FILE-INDEX.md` using the `file-indexer` skill.
 - Log decisions if architectural choices were made.
 
 ---
 
-## 5. Naming Conventions (Tech-Agnostic)
-
-| Entity | Convention | Example |
-|---|---|---|
-| Files | kebab-case | `user-service.ts` |
-| Classes | PascalCase | `UserService` |
-| Functions/methods | camelCase | `getUserById()` |
-| Constants | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT` |
-| DB tables | snake_case, plural | `user_profiles` |
-| DB columns | snake_case | `created_at` |
-| Env variables | UPPER_SNAKE_CASE | `DATABASE_URL` |
-| Test files | `<subject>.test.<ext>` | `user-service.test.ts` |
-| Test cases IDs | `TC-<MODULE>-<NNN>` | `TC-AUTH-001` |
-
----
-
-## 6. Security Defaults
+## 5. Security Defaults
 
 - **Never** hardcode secrets, API keys, passwords.
 - Always use environment variables for sensitive config.
@@ -109,7 +104,7 @@ PLAN  →  IMPLEMENT  →  TEST  →  LOG
 
 ---
 
-## 7. Code Quality Rules
+## 6. Code Quality Rules
 
 - **DRY**: extract repeated logic into shared utilities after the 2nd occurrence.
 - **YAGNI**: don't add features not explicitly requested.
@@ -120,30 +115,27 @@ PLAN  →  IMPLEMENT  →  TEST  →  LOG
 
 ---
 
-## 8. Git Conventions
+## 7. Git Conventions
 
 Commit message format: `<type>(<scope>): <subject>`
 
-| Type | When to use |
-|---|---|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `refactor` | Restructuring without behavior change |
-| `test` | Adding/updating tests |
-| `docs` | Documentation only |
-| `chore` | Build, deps, config |
-| `perf` | Performance improvement |
+Types: `feat` | `fix` | `refactor` | `test` | `docs` | `chore` | `perf` | `ci`
 
 Branch naming: `<type>/<short-description>` → `feat/user-auth`, `fix/login-redirect`
 
 ---
 
-## 9. Agent Coordination
+## 8. Agent Coordination
 
-When using multi-agent mode (`oryn-dev` chatmode):
-- **Planner** agent handles analysis → outputs a task breakdown.
-- **Implementer** agent handles coding → one file/module at a time.
-- **TC-Writer** agent writes test cases for each implementation.
-- **QA-Tester** agent runs tests and reports results.
+| Agent | Role |
+|---|---|
+| `architect` | Greenfield design → produces `system-design.md` + `phase-N.md` |
+| `phase-writer` | Produces prioritized `phase-N.md` files when arch is already known |
+| `oryn-dev` | Coordinator — phase-first execution, orchestrates subagents |
+| `implementer` | Writes code per task spec |
+| `tc-writer` | Writes test cases (lightweight model) |
+| `qa-tester` | Runs tests, reports failures (lightweight model) |
+| `debugger` | Bug reports and CI failures |
+| `quick` | Single-agent, no pipeline — for simple tasks |
 
-Never skip phases. Each agent's output feeds the next.
+Detailed workflow logic lives in `.github/agents/oryn-dev.agent.md`.

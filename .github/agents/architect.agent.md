@@ -15,6 +15,10 @@ handoffs:
     agent: oryn-dev
     prompt: "Implement Phase 1 from the plan at .context/plans/phase-1.md. Read system-design.md first for context."
     send: false
+  - label: "📋 Write Phases Only"
+    agent: phase-writer
+    prompt: "Use the architecture above as context and produce prioritized phase-N.md files in .context/plans/."
+    send: false
   - label: "🔒 Security Review Design"
     agent: security-auditor
     prompt: "Review the system design at .context/plans/system-design.md for security risks before implementation begins."

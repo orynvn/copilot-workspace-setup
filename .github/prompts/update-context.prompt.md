@@ -50,33 +50,15 @@ Review bugs/issues encountered this session:
   ```
 - Update status of old errors that were fixed: `Fixed: {{date}}`
 
-### 4. Session log summary
+### 4. Update FILE-INDEX.md
 
-Create or update `.context/sessions/session-<date>.md`:
+For each file created or modified this session:
+- New file, new module → add row
+- New file, existing module → append path to `Files` column
+- File renamed/moved → update path
+- File deleted → remove from row (remove row if `Files` becomes empty)
 
-```markdown
-# Session Log: {{date}}
-
-## Goal
-${input:session}
-
-## Completed
-- [ ] <task 1>
-- [ ] <task 2>
-
-## Decisions in this session
-- ADR-NNN: <decision title> (if any)
-
-## Issues encountered
-- <issue 1> → <resolution>
-
-## Next steps
-- <next task 1>
-- <next task 2>
-
-## Changed files
-${input:changes}
-```
+Use the `file-indexer` skill for detailed rules.
 
 ### 5. Verify context integrity
 

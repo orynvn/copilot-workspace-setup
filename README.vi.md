@@ -29,6 +29,8 @@ copilot-workspace-setup/
 │   ├── copilot-instructions.md        # Global rules (tech-agnostic)
 │   ├── agents/                        # Custom agents (VS Code v1.100+)
 │   │   ├── oryn-dev.agent.md          # Coordinator — điều phối subagents tự động
+│   │   ├── architect.agent.md         # System design toàn diện + phase plans (user-invocable: true)
+│   │   ├── phase-writer.agent.md      # Lập phase plans khi đã biết kiến trúc (user-invocable: true)
 │   │   ├── planner.agent.md           # Sub-agent phân tích (user-invocable: false)
 │   │   ├── implementer.agent.md       # Sub-agent viết code (user-invocable: false)
 │   │   ├── tc-writer.agent.md         # Sub-agent viết test cases (user-invocable: false)
@@ -62,23 +64,25 @@ copilot-workspace-setup/
 │   │   ├── test-case-writer/SKILL.md
 │   │   ├── api-tester/SKILL.md
 │   │   ├── e2e-tester/SKILL.md
-│   │   └── context-updater/SKILL.md
+│   │   ├── context-updater/SKILL.md
+│   │   └── file-indexer/SKILL.md
 │   └── hooks/                         # VS Code Agent hooks (auto-loaded)
 │       ├── qa-workflow.json           # Hook config — SessionStart/PostToolUse/Stop
 │       └── scripts/
 │           ├── inject-session-ctx.sh  # SessionStart: inject .context/ vào conversation
 │           ├── check-task-done.sh     # UserPromptSubmit: kiểm tra context sẵn sàng
-│           ├── post-edit-audit.sh     # PostToolUse: ghi log file edits
+│           ├── post-edit-audit.sh     # PostToolUse: ghi log file edits vào HISTORY.md
 │           └── session-stop.sh        # Stop: nhắc update HISTORY.md
 │
 ├── .context/
 │   ├── HISTORY.md                     # Log lịch sử thay đổi
 │   ├── DECISIONS.md                   # Index architectural decisions
 │   ├── ERRORS.md                      # Index errors đã gặp
+│   ├── FILE-INDEX.md                  # Module → files map để agent tra cứu nhanh
 │   ├── log.sh                         # Quick log script
 │   ├── decisions/                     # Chi tiết từng ADR
 │   ├── errors/                        # Chi tiết từng error
-│   ├── sessions/                      # Per-session logs (auto-created by hooks)
+│   ├── plans/                         # system-design.md + phase-N.md (tạo bởi architect/phase-writer)
 │   └── test-cases/
 │       └── TC-TEMPLATE.md
 │
@@ -169,13 +173,14 @@ Kể từ VS Code 1.100+, pipeline **hoàn toàn tự động** — không cần
 3. Mô tả task (hoặc dùng /new-feature, /create-module...)
 
    Oryn Dev (Coordinator) tự động:
-   ├── → Planner subagent    phân tích + task breakdown
+   ├── Có phase file? → Đọc phase-N.md trực tiếp (bỏ qua Planner)
+   ├── → Planner subagent    phân tích + task breakdown (không có phase file)
    ├── → User confirm
    ├── → Implementer subagent  implement từng file
-   ├── → TC-Writer subagent   viết test cases
-   ├── → QA-Tester subagent   chạy tests + báo cáo
+   ├── → TC-Writer subagent   viết test cases (nếu yêu cầu)
+   ├── → QA-Tester subagent   chạy tests + báo cáo (nếu yêu cầu)
    ├── → Commit (git add + commit — không push)
-   └── → Cập nhật .context/HISTORY.md
+   └── → Cập nhật .context/HISTORY.md + FILE-INDEX.md
 ```
 
 Sau mỗi phase, **handoff buttons** xuất hiện để chuyển tiếp sang agent tiếp theo (hoặc agent tự gọi subagent).
@@ -186,11 +191,14 @@ Sau mỗi phase, **handoff buttons** xuất hiện để chuyển tiếp sang ag
 
 | Agent | Vai trò | Visibility |
 |-------|---------|-----------|
-| `oryn-dev` | Coordinator — điều phối pipeline | Hiện trong dropdown |
-| `planner` | Phân tích, task breakdown | Subagent only |
+| `oryn-dev` | Coordinator — phase-first, điều phối pipeline | Hiện trong dropdown |
+| `architect` | System design toàn diện → `system-design.md` + `phase-N.md` | Hiện trong dropdown |
+| `phase-writer` | Lập `phase-N.md` theo ưu tiên khi đã biết kiến trúc | Hiện trong dropdown |
+| `planner` | Phân tích, task breakdown (không có phase file) | Subagent only |
 | `implementer` | Viết code theo stack conventions | Subagent only |
 | `tc-writer` | Viết test cases TC-MODULE-NNN | Subagent only |
-| `qa-tester` | Chạy tests, root cause analysis | Subagent only || `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Hiện trong dropdown |
+| `qa-tester` | Chạy tests, root cause analysis | Subagent only |
+| `debugger` | Bug fix + CI/CD failure (GitHub MCP + Error Learning MCP) | Hiện trong dropdown |
 | `security-auditor` | OWASP Top 10 audit, on-demand | Hiện trong dropdown |
 | `code-reviewer` | PR review inline comments qua GitHub MCP | Hiện trong dropdown |
 | `quick` | Thực thi đơn giản — không plan, không test, thực thi trực tiếp | Hiện trong dropdown |
@@ -224,9 +232,9 @@ VS Code tự động load và chạy hooks tại các lifecycle events:
 
 | Event | Script | Tác dụng |
 |-------|--------|----------|
-| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY/ERRORS/DECISIONS vào context |
+| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY/FILE-INDEX/ERRORS/DECISIONS vào context |
 | `UserPromptSubmit` | `check-task-done.sh` | Cảnh báo nếu `.context/` chưa sẵn sàng |
-| `PostToolUse` | `post-edit-audit.sh` | Ghi log file edits vào session log |
+| `PostToolUse` | `post-edit-audit.sh` | Ghi log file edits trực tiếp vào HISTORY.md |
 | `Stop` | `session-stop.sh` | Chặn session nếu HISTORY.md chưa được update |
 
 ---
@@ -235,10 +243,11 @@ VS Code tự động load và chạy hooks tại các lifecycle events:
 
 `.context/` là "memory" của dự án — tự động được inject vào mỗi session qua hooks:
 
-- **HISTORY.md** — log mọi thay đổi theo thời gian
+- **HISTORY.md** — log mọi thay đổi theo thời gian (tail-15 inject vào mỗi session)
+- **FILE-INDEX.md** — module → files map; thay thế việc scan toàn bộ codebase
 - **DECISIONS.md** — architectural decisions (ADR index)
 - **ERRORS.md** — bugs đã gặp để tránh lặp lại
-- **sessions/** — per-session logs (tự tạo bởi hook)
+- **plans/** — system-design.md + phase-N.md (tạo bởi `architect` / `phase-writer`)
 - **test-cases/** — TC specs theo module
 
 ```bash

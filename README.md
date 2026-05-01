@@ -29,6 +29,8 @@ copilot-workspace-setup/
 │   ├── copilot-instructions.md        # Global rules (tech-agnostic)
 │   ├── agents/                        # Custom agents (VS Code v1.100+)
 │   │   ├── oryn-dev.agent.md          # Coordinator — orchestrates subagents automatically
+│   │   ├── architect.agent.md         # Greenfield system design + phase plans (user-invocable: true)
+│   │   ├── phase-writer.agent.md      # Phase planning without full design (user-invocable: true)
 │   │   ├── planner.agent.md           # Analysis sub-agent (user-invocable: false)
 │   │   ├── implementer.agent.md       # Code-writing sub-agent (user-invocable: false)
 │   │   ├── tc-writer.agent.md         # Test case sub-agent (user-invocable: false)
@@ -62,23 +64,25 @@ copilot-workspace-setup/
 │   │   ├── test-case-writer/SKILL.md
 │   │   ├── api-tester/SKILL.md
 │   │   ├── e2e-tester/SKILL.md
-│   │   └── context-updater/SKILL.md
+│   │   ├── context-updater/SKILL.md
+│   │   └── file-indexer/SKILL.md
 │   └── hooks/                         # VS Code Agent hooks (auto-loaded)
 │       ├── qa-workflow.json           # Hook config — SessionStart/PostToolUse/Stop
 │       └── scripts/
 │           ├── inject-session-ctx.sh  # SessionStart: inject .context/ into conversation
 │           ├── check-task-done.sh     # UserPromptSubmit: verify context is ready
-│           ├── post-edit-audit.sh     # PostToolUse: log file edits to session log
+│           ├── post-edit-audit.sh     # PostToolUse: log file edits to HISTORY.md
 │           └── session-stop.sh        # Stop: block session if HISTORY.md not updated
 │
 ├── .context/
 │   ├── HISTORY.md                     # Chronological change log
 │   ├── DECISIONS.md                   # Architectural decisions index (ADR)
 │   ├── ERRORS.md                      # Known bugs index (avoid repeating)
+│   ├── FILE-INDEX.md                  # Module → files map for fast agent lookup
 │   ├── log.sh                         # Quick log helper script
 │   ├── decisions/                     # Individual ADR files
 │   ├── errors/                        # Individual error detail files
-│   ├── sessions/                      # Per-session logs (auto-created by hooks)
+│   ├── plans/                         # system-design.md + phase-N.md (produced by architect/phase-writer)
 │   └── test-cases/
 │       └── TC-TEMPLATE.md
 │
@@ -169,13 +173,14 @@ From VS Code 1.100+, the pipeline is **fully automatic** — no manual chatmode 
 3. Describe your task (or use /new-feature, /create-module...)
 
    Oryn Dev (Coordinator) automatically:
-   ├── → Planner subagent      analyze + task breakdown
+   ├── Phase file exists? → Read phase-N.md directly (skip Planner)
+   ├── → Planner subagent      analyze + task breakdown (no phase file)
    ├── → User confirms plan
    ├── → Implementer subagent  implement files one by one
-   ├── → TC-Writer subagent    write test cases
-   ├── → QA-Tester subagent    run tests + report
+   ├── → TC-Writer subagent    write test cases (if required)
+   ├── → QA-Tester subagent    run tests + report (if required)
    ├── → Commit (git add + commit — no push)
-   └── → Update .context/HISTORY.md
+   └── → Update .context/HISTORY.md + FILE-INDEX.md
 ```
 
 After each phase, **handoff buttons** appear to advance to the next agent (or the coordinator calls subagents directly).
@@ -186,8 +191,10 @@ After each phase, **handoff buttons** appear to advance to the next agent (or th
 
 | Agent | Role | Visibility |
 |---|---|---|
-| `oryn-dev` | Coordinator — orchestrates the full pipeline | Shown in dropdown |
-| `planner` | Analysis, task breakdown | Subagent only |
+| `oryn-dev` | Coordinator — phase-first, orchestrates the full pipeline | Shown in dropdown |
+| `architect` | Greenfield system design → `system-design.md` + `phase-N.md` | Shown in dropdown |
+| `phase-writer` | Prioritized `phase-N.md` files when arch is already known | Shown in dropdown |
+| `planner` | Analysis, task breakdown (no phase file) | Subagent only |
 | `implementer` | Write code per stack conventions | Subagent only |
 | `tc-writer` | Write test cases TC-MODULE-NNN | Subagent only |
 | `qa-tester` | Run tests, root cause analysis | Subagent only |
@@ -227,9 +234,9 @@ VS Code automatically loads and fires hooks at lifecycle events:
 
 | Event | Script | Effect |
 |---|---|---|
-| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY / ERRORS / DECISIONS into context |
+| `SessionStart` | `inject-session-ctx.sh` | Inject HISTORY / FILE-INDEX / ERRORS / DECISIONS into context |
 | `UserPromptSubmit` | `check-task-done.sh` | Warn if `.context/` is not ready |
-| `PostToolUse` | `post-edit-audit.sh` | Log file edits to the session log |
+| `PostToolUse` | `post-edit-audit.sh` | Log file edits directly to HISTORY.md |
 | `Stop` | `session-stop.sh` | Block session exit if HISTORY.md was not updated |
 
 ---
@@ -238,10 +245,11 @@ VS Code automatically loads and fires hooks at lifecycle events:
 
 `.context/` acts as the project's long-term memory — auto-injected into every session via hooks:
 
-- **HISTORY.md** — chronological change log
+- **HISTORY.md** — chronological change log (tail-15 injected at session start)
+- **FILE-INDEX.md** — module → files map; replaces full codebase scans
 - **DECISIONS.md** — architectural decisions (ADR index)
 - **ERRORS.md** — known bugs to avoid repeating
-- **sessions/** — per-session logs (auto-created by hook)
+- **plans/** — system-design.md + phase-N.md (produced by `architect` / `phase-writer`)
 - **test-cases/** — TC specs per module
 
 ```bash

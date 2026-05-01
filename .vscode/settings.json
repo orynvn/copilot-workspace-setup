@@ -36,6 +36,14 @@
   "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "chat.mcp.serverSampling": {
+    "copilot-workspace-setup/.vscode/mcp.json: error-learning": {
+      "allowedModels": [
+        "copilot/auto",
+        "copilotcli/claude-sonnet-4.6"
+      ]
+    }
+  },
 
   // ─── Recommended extensions ──────────────────────────────────────────────────
   // See .vscode/extensions.json

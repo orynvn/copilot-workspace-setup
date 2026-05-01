@@ -10,10 +10,10 @@ The `.context/` directory is the project's **memory** for Copilot agents. All de
 ├── HISTORY.md         # Chronological log of all changes
 ├── DECISIONS.md       # Index of architectural decisions (ADR)
 ├── ERRORS.md          # Index of known errors & fixes
+├── FILE-INDEX.md      # Module → files map for fast agent lookup
 ├── log.sh             # Quick log script for HISTORY.md
 ├── decisions/         # ADR details: ADR-NNN-<slug>.md
 ├── errors/            # Detailed error reports
-├── sessions/          # Session logs by date: session-YYYY-MM-DD.md
 └── test-cases/        # Test case specs: TC-MODULE-spec.md
 ```
 
@@ -21,12 +21,19 @@ The `.context/` directory is the project's **memory** for Copilot agents. All de
 
 ### At the start of each session
 
-Copilot will automatically read:
-1. `HISTORY.md` — last 10 entries
-2. `DECISIONS.md` — all `Accepted` decisions
-3. `ERRORS.md` — open errors to avoid
+Context is injected automatically via the VS Code hook. What gets injected:
+- `HISTORY.md` — last 15 entries
+- `FILE-INDEX.md` — all module rows
+- `ERRORS.md` — open errors (headings only)
+- `DECISIONS.md` — last 5 decisions
 
-Or run the script: `source .context/inject-session-ctx.sh`
+For deeper lookup, search by keyword:
+```bash
+grep -i "<keyword>" .context/DECISIONS.md
+grep -i "<keyword>" .context/ERRORS.md
+grep -i "<keyword>" .context/HISTORY.md | tail -5
+grep -i "<module>" .context/FILE-INDEX.md
+```
 
 ### At the end of each session
 
@@ -64,8 +71,7 @@ echo "# Known Errors" > /path/to/new-project/.context/ERRORS.md
 
 If you do not want to track context in git, add to `.gitignore`:
 ```
-.context/sessions/
 .context/test-cases/
 ```
 
-However, it is **recommended to commit** `HISTORY.md`, `DECISIONS.md`, `ERRORS.md` so the team can share context.
+However, it is **recommended to commit** `HISTORY.md`, `DECISIONS.md`, `ERRORS.md`, `FILE-INDEX.md` so the team can share context.

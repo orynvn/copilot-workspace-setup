@@ -54,15 +54,15 @@ Stack-specific rules only load when the agent works with the matching file type.
 ```
 .context/
 ├── HISTORY.md      # Change log — only last 15 entries injected
+├── FILE-INDEX.md   # Module → files map — replaces full codebase scans
 ├── DECISIONS.md    # Architectural decisions — index → decisions/
 ├── ERRORS.md       # Known bugs — index → errors/
 ├── plans/          # System design + phase plans (see below)
 ├── decisions/      # Detailed ADR files
-├── errors/         # Detailed bug files
-└── sessions/       # Per-session logs (auto-created by PostToolUse hook)
+└── errors/         # Detailed bug files
 ```
 
-The three index files **describe and link only** — the agent reads the index first, then loads detail files when needed. Context stays lean as the project grows.
+The four index files **describe and link only** — the agent reads the index first, then loads detail files when needed. Context stays lean as the project grows.
 
 ---
 
@@ -71,16 +71,17 @@ The three index files **describe and link only** — the agent reads the index f
 **9 agents** organized in 3 groups:
 
 **Pipeline agents** (`user-invocable: false` — coordinator calls only):
-- `planner` — analyze tasks, create task breakdown
+- `planner` — analyze tasks, create task breakdown (when no phase file)
 - `implementer` — write code following stack conventions
 - `tc-writer` — write test cases
 - `qa-tester` — run tests, analyze failures, fix, re-run
 
 **Coordinator** (`user-invocable: true`):
-- `oryn-dev` — orchestrates the full pipeline, enforces Plan→Implement→Test→Commit→Log
+- `oryn-dev` — orchestrates the full pipeline, phase-first (skips planner if phase file exists)
 
 **On-demand** (`user-invocable: true`):
-- `architect` — pre-project system design (see below)
+- `architect` — full pre-project system design → `system-design.md` + `phase-N.md`
+- `phase-writer` — produces prioritized `phase-N.md` files when architecture is already known
 - `debugger` — bug fixing + MCP error learning
 - `code-reviewer` — PR review + inline comments
 - `security-auditor` — OWASP Top 10 scan
@@ -88,9 +89,9 @@ The three index files **describe and link only** — the agent reads the index f
 
 **Lifecycle hooks** (4 events):
 ```
-SessionStart      → inject-session-ctx.sh  # Inject HISTORY/ERRORS/DECISIONS
+SessionStart      → inject-session-ctx.sh  # Inject HISTORY/FILE-INDEX/ERRORS/DECISIONS
 UserPromptSubmit  → check-task-done.sh     # Prompt to update context if task in progress
-PostToolUse       → post-edit-audit.sh     # Log every file edit to session log
+PostToolUse       → post-edit-audit.sh     # Log every file edit to HISTORY.md
 Stop              → session-stop.sh        # Block close if HISTORY.md not updated today
 ```
 
@@ -250,12 +251,12 @@ project/
 │       └── scripts/               # 4 hook scripts
 ├── .context/
 │   ├── HISTORY.md
+│   ├── FILE-INDEX.md
 │   ├── DECISIONS.md
 │   ├── ERRORS.md
 │   ├── plans/                     # system-design.md + phase-N.md
 │   ├── decisions/
-│   ├── errors/
-│   └── sessions/
+│   └── errors/
 ├── .vscode/
 │   └── mcp.json                   # context7, github, error-learning MCPs
 └── templates/                     # laravel, nextjs, nestjs, django, fastapi, react

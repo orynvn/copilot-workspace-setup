@@ -14,19 +14,23 @@ CONTEXT_DIR="$ROOT/.context"
 
 # Initialize .context/ if it does not exist
 if [[ ! -d "$CONTEXT_DIR" ]]; then
-  mkdir -p "$CONTEXT_DIR"/{decisions,errors,sessions,test-cases}
-  touch "$CONTEXT_DIR/HISTORY.md" "$CONTEXT_DIR/DECISIONS.md" "$CONTEXT_DIR/ERRORS.md"
+  mkdir -p "$CONTEXT_DIR"/{decisions,errors,test-cases}
+  touch "$CONTEXT_DIR/HISTORY.md" "$CONTEXT_DIR/DECISIONS.md" "$CONTEXT_DIR/ERRORS.md" "$CONTEXT_DIR/FILE-INDEX.md"
 fi
 
 # Collect context
 HISTORY=$(tail -15 "$CONTEXT_DIR/HISTORY.md" 2>/dev/null || echo "(no history)")
 OPEN_ERRORS=$(grep "^###" "$CONTEXT_DIR/ERRORS.md" 2>/dev/null | head -5 || echo "(no open errors)")
 LAST_DECISION=$(tail -5 "$CONTEXT_DIR/DECISIONS.md" 2>/dev/null || echo "(no decisions)")
+FILE_INDEX=$(grep "^|" "$CONTEXT_DIR/FILE-INDEX.md" 2>/dev/null | grep -v "^| Module" | grep -v "^|---" | grep -v "_empty_" | head -30 || echo "(no index yet)")
 
 # Build context message
 CTX="=== PROJECT CONTEXT ===
 [HISTORY - last 15 entries]
 $HISTORY
+
+[FILE INDEX - module → files]
+$FILE_INDEX
 
 [OPEN ERRORS]
 $OPEN_ERRORS

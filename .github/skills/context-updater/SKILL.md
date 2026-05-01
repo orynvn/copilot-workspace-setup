@@ -18,10 +18,10 @@ This skill guides how to maintain the `.context/` folder so it always reflects t
 ├── HISTORY.md        # Chronological log of changes
 ├── DECISIONS.md      # Index of architectural decisions (ADR)
 ├── ERRORS.md         # Known bugs, errors, anti-patterns
+├── FILE-INDEX.md     # Module → files map for fast agent lookup
 ├── log.sh            # Quick logging script
 ├── decisions/        # ADR detail files: ADR-001-*.md
 ├── errors/           # Detailed error reports
-├── sessions/         # Per-session logs
 └── test-cases/       # Test case specifications: TC-MODULE-spec.md
 ```
 
@@ -126,23 +126,25 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `decision`, `migratio
 - `path/to/file.ts` — <why>
 ```
 
-## Workflow: Read context at session start
+## Workflow: Read context at task start
+
+Do **not** read full files. Session context is already injected (HISTORY tail-15 + FILE-INDEX). For deeper lookup:
 
 ```
-1. Read HISTORY.md (last 10 entries)
-2. Read DECISIONS.md (all Accepted decisions)
-3. Read ERRORS.md (Open errors)
-4. Check sessions/ for the most recent day
+1. Search DECISIONS.md by keyword: grep -i "<keyword>" .context/DECISIONS.md
+2. Search ERRORS.md by keyword: grep -i "<keyword>" .context/ERRORS.md
+3. Search FILE-INDEX.md by module: grep -i "<module>" .context/FILE-INDEX.md
+4. Search HISTORY.md by keyword: grep -i "<keyword>" .context/HISTORY.md | tail -5
 ```
 
-## Workflow: Write context at session end
+## Workflow: Write context at task end
 
 ```
-1. Append HISTORY.md with all changes from the session
+1. Append HISTORY.md with all changes from the task
 2. Check DECISIONS.md — any new decisions? → log-decision prompt
 3. Check ERRORS.md — any newly discovered bugs? → append
    - Any old bugs fixed? → update status
-4. Create session log in sessions/session-YYYY-MM-DD.md
+4. Update FILE-INDEX.md — use file-indexer skill
 ```
 
 ## Quick Log Script (log.sh)
