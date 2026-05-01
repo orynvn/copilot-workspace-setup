@@ -67,7 +67,7 @@ Choose the workflow tier based on task scope — this is the primary token optim
 | Feature with tests required | viết test, thêm unit test, cần coverage | + `tc-writer` + `qa-tester` | + TEST |
 | Phase file exists (`.context/plans/phase-N.md`) | implement phase, chạy phase | `oryn-dev` phase-first | Read phase → IMPLEMENT → TEST (if required) → COMMIT → LOG |
 | Need phases, arch already known | lên phases, viết kế hoạch, phân phase, tạo plan | `phase-writer` | Analyze → Write phase-N.md → oryn-dev |
-| Complex / multi-module / arch | thiết kế, refactor toàn bộ, kiến trúc, tái cấu trúc | `architect` → `oryn-dev` | DESIGN → PLAN → IMPLEMENT → TEST → COMMIT → LOG |
+| Complex / multi-module / arch | thiết kế, refactor toàn bộ, kiến trúc, tái cấu trúc | `architect` | DESIGN → output `system-design.md` + `phase-N.md` → **stop, wait for user** |
 
 > **Default to the lightest sufficient tier.** Only escalate if the current tier is insufficient.
 
@@ -129,7 +129,7 @@ Branch naming: `<type>/<short-description>` → `feat/user-auth`, `fix/login-red
 
 | Agent | Role |
 |---|---|
-| `architect` | Greenfield design → produces `system-design.md` + `phase-N.md` |
+| `architect` | Greenfield design → produces `system-design.md` + `phase-N.md`, then **stops** — user manually invokes `oryn-dev` per phase |
 | `phase-writer` | Produces prioritized `phase-N.md` files when arch is already known |
 | `oryn-dev` | Coordinator — phase-first execution, orchestrates subagents |
 | `implementer` | Writes code per task spec |

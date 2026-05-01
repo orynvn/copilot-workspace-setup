@@ -35,3 +35,4 @@
 [2026-05-01] chore: edited `/Volumes/DataStorage/oryn-project/copilot-workspace-setup/.github/prompts/update-context.prompt.md`
 [2026-05-01] chore: edited `/Volumes/DataStorage/oryn-project/copilot-workspace-setup/.context/HISTORY.md`
 [2026-05-01] chore: edited `/Volumes/DataStorage/oryn-project/copilot-workspace-setup/.context/README.md`
+[2026-05-01] chore: edited `/Volumes/DataStorage/oryn-project/copilot-workspace-setup/.github/copilot-instructions.md`
